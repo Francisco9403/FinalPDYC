@@ -1,0 +1,29 @@
+server:
+  port: 9092
+
+spring:
+  application:
+    name: msvc-user
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/userdb
+    username: postgres
+    password: mateamargo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+security:
+  jwt:
+    #secret: mate_amargo123  #Despues descomentar
+    #expiration: 864000000 # 10 día en milisegundos
+
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka

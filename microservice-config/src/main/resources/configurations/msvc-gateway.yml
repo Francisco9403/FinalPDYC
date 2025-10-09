@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: msvc-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        #- id: students
+        #  uri: 'http://localhost:8090'
+        #  predicates:
+        #    - Path=/api/student/**
+            
+        #- id: courses
+        #  uri: 'http://localhost:9090'
+        #  predicates:
+        #    - Path=/api/course/**
+
+        #- id: events
+        #  uri: 'http://localhost:9091'
+        #  predicates:
+        #    - Path=/api/event/**
+
+        #- id: artists
+        #  uri: 'http://localhost:8091'
+        #  predicates:
+        #    - Path=/api/artist/**
+            
+        #- id: authentication
+        #  uri: 'http://localhost:9093'
+        #  predicates:
+        #    - Path=/api/auth/**
+
+        #- id: userPublico
+        #  uri: 'http://localhost:9092'
+        #  predicates:
+        #    - Path=/api/public/**
+
+        - id: userRegistrado
+          uri: 'http://localhost:9092'
+          predicates:
+            - Path=/api/user/**
+
+        - id: userAdmin
+          uri: 'http://localhost:9092'
+          predicates:
+            - Path=/api/admin/**
+
+security:
+  jwt:
+    #secret: mate_amargo123  # Despues descomentar
+    #expiration: 864000000 # 10 días en milisegundos
+    whitelist: >
+      /actuator/**,
+      /auth/login,
+      /api/public/**,
+      /api/student/**,
+      /api/course/**,
+      /api/event/**,
+      /api/artist/**,
+
+eureka:
+  client:
+    register-with-eureka: false

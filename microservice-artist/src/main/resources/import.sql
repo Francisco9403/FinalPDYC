@@ -1,0 +1,10 @@
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Bad Bunny', 'Reggaeton', true, 'bad.bunny@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Taylor Swift', 'Pop', true, 'taylor.swift@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Queen', 'Rock', true, 'queen@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Rosalía', 'Flamenco-pop', true, 'rosalia@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Dua Lipa', 'Pop', true, 'dua.lipa@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('The Weeknd', 'R&B', true, 'the.weeknd@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Shakira', 'Pop Latino', true, 'shakira@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Eminem', 'Hip Hop', true, 'eminem@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Adele', 'Soul', true, 'adele@example.com');
+INSERT INTO artists (nombre, genero, active, email) VALUES ('Metallica', 'Metal', true, 'metallica@example.com');
