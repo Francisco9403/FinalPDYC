@@ -1,13 +1,22 @@
 package com.microservice.user.feign;
 
 import com.microservice.user.feign.dto.ArtistDTO;
+
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "msvc-artist", url = "localhost:8091")
 public interface ArtistClient {
     
-    @GetMapping("/api/artist/{id}")
-    ArtistDTO getById(@PathVariable("id") Long id);
+    // Obtener artista por ID (publico, sin roles)
+    @GetMapping("/api/artist/public/{id}")
+    ArtistDTO getByIdPublic(@PathVariable("id") Long id);
+
+    // Obtener todos los artistas (publico, sin roles)
+    @GetMapping("/api/artist/public/all")
+    List<ArtistDTO> getAllPublic(@RequestParam(value = "genero", required = false) String genero);
 }

@@ -2,8 +2,11 @@ package com.microservice.event.controller;
 
 import com.microservice.event.entity.Event;
 import com.microservice.event.service.EventService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,33 +22,70 @@ public class EventController {
     private EventService service;
 
     @PostMapping("/create")
-    public Event create(@RequestBody Event event) { return service.save(event); }
+    public ResponseEntity<?> create(@RequestBody Event event,
+                                    @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("user") && !roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.save(event));
+    }
 
     @GetMapping("/all")
-    public List<Event> all(@RequestParam(required = false) String state) { return service.findAll(state); }
+    public List<Event> all(@RequestParam(required = false) String state) {
+        return service.findAll(state); // público, sin restricción
+    }
 
     @GetMapping("/search/{id}")
-    public Event byId(@PathVariable Long id) { return service.findById(id); }
+    public Event byId(@PathVariable Long id) {
+        return service.findById(id);
+    }
 
     @PostMapping("/{id}/artists")
-    public Event addArtist(@PathVariable Long id, @RequestBody Map<String, Long> body) {
-        return service.addArtist(id, body.get("artistId"));
+    public ResponseEntity<?> addArtist(@PathVariable Long id,
+                                       @RequestBody Map<String, Long> body,
+                                       @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.addArtist(id, body.get("artistId")));
     }
 
     @DeleteMapping("/{id}/artists/{artistId}")
-    public Event removeArtist(@PathVariable Long id, @PathVariable Long artistId) {
-        return service.removeArtist(id, artistId);
+    public ResponseEntity<?> removeArtist(@PathVariable Long id,
+                                          @PathVariable Long artistId,
+                                          @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.removeArtist(id, artistId));
     }
 
     @PutMapping("/{id}/confirmed")
-    public Event confirm(@PathVariable Long id) { return service.confirm(id); }
+    public ResponseEntity<?> confirm(@PathVariable Long id,
+                                     @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.confirm(id));
+    }
 
     @PutMapping("/{id}/rescheduled")
-    public Event reschedule(@PathVariable Long id,
-                            @RequestBody @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newDate) {
-        return service.reschedule(id, newDate);
+    public ResponseEntity<?> reschedule(@PathVariable Long id,
+                                        @RequestBody @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newDate,
+                                        @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.reschedule(id, newDate));
     }
 
     @PutMapping("/{id}/canceled")
-    public Event cancel(@PathVariable Long id) { return service.cancel(id); }
+    public ResponseEntity<?> cancel(@PathVariable Long id,
+                                    @RequestHeader("X-Auth-Roles") String roles) {
+        if (!roles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(service.cancel(id));
+    }
 }
+

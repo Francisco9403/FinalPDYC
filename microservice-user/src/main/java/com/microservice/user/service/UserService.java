@@ -28,6 +28,8 @@ public interface UserService {
     List<User> recipientsByArtists(EventStateChangedDTO dto);
     void notifyByArtists(EventStateChangedDTO dto);
 
+    List<ArtistDTO> getGeneroArtists(String genero);
+
     
     
 }

@@ -1,100 +1,70 @@
 package com.microservice.user.controller;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
+import com.microservice.user.dto.RegisterRequestDTO;
+import com.microservice.user.dto.UserDTO;
+import com.microservice.user.dto.LoginRequestDTO;
+import com.microservice.user.entity.User;
+import com.microservice.user.feign.dto.ArtistDTO;
+import com.microservice.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.microservice.user.service.UserService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/public")
 public class PublicController {
 
     @Autowired
-    private ArtistaService artistaService;
-    @Autowired
-    private EventoService eventoService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserAuthenticationService userAuthenticationService;
-    @Autowired
-    private ModelMapper modelMapper;
+    private UserService userService; // Ahora centraliza toda la lógica
 
-    @GetMapping("/artistas")
-    public List<Artista> listarArtistasActivos(){
-        List<Artista> artistas = artistaService.getAll(null);
-        List<Artista> listAux = new ArrayList<Artista>();
-        
-        for (Artista art : artistas){
-            if(art.isActive()){
-                listAux.add(art);
-            }
+    // REGISTRO DE USUARIO
+    @PostMapping("/registrarUsuario")
+    public ResponseEntity<?> registrarUsuario(@RequestBody UserDTO userDTO) throws Exception { 
+        try {
+            userService.create(userDTO);
+            return ResponseEntity.ok(Map.of("message", "Usuario creado con éxito"));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
-        return listAux;
     }
 
+    // OBTENER TODOS LOS ARTISTAS POR GENERO (delegado a UserService)
+    @GetMapping("/artistasGenero")
+    public List<ArtistDTO> listarArtistasPorGenero(String genero) {
+        // UserService se encarga de traer solo los artistas activos
+        return userService.getGeneroArtists(genero);
+    }
+
+    // OBTENER TODOS LOS EVENTOS VIGENTES Y PRÓXIMOS (delegado a UserService)
     @GetMapping("/eventos")
-    public List<Evento> listarEventosVigYprox(){
-        LocalDate hoy = LocalDate.now();
-        return eventoService.getAll(null).stream()  //La "e" es la variable que representa cada objeto Evento del stream
-                .filter(e -> (e.getState() == EventoState.CONFIRMED || e.getState() == EventoState.RESCHEDULED) //Filtra los eventos con estado "confirmado" o "rerogramado"
-                               && e.getStartDate().isAfter(hoy) )                         // Y que no halla sucedido todavia, osea fechas mayores a "hoy"
-                .collect(Collectors.toList());
+    public List<?> listarEventosVigYprox() {
+        // UserService filtra por eventos confirmados/reprogramados y fechas futuras
+        return userService.getUpcomingEvents();
     }
 
+    // OBTENER EVENTOS DE UN ARTISTA ESPECÍFICO
     @GetMapping("/eventosDeArtista/{id}")
-    public List<Evento> eventosDeArtista(@PathVariable Long id){
-        LocalDate hoy = LocalDate.now();
-        Artista art = artistaService.getById(id);
-
-        return art.getEvents().stream()             //Hago un stream que luego paso a lista, con los eventos en estado confirmados o reprogramados
-                .filter(e -> (e.getState() == EventoState.CONFIRMED || e.getState() == EventoState.RESCHEDULED)
-                                && e.getStartDate().isAfter(hoy)) // y me aseguro que todavia no hallan pasado
-                .collect(Collectors.toList());
+    public List<?> eventosDeArtista(@PathVariable Long id) {
+        return userService.getEventsByArtist(id);
     }
 
+    // OBTENER DETALLE DE UN EVENTO
     @GetMapping("/evento/{id}")
-    public Evento mostrarEvento(@PathVariable Long id){ //VER si esto devuelve todos sus datos
-        Evento e = eventoService.getById(id);
+    public Object mostrarEvento(@PathVariable Long id) { 
+        Object e = userService.getEventById(id);
 
-        if (e.getState() == EventoState.TENTATIVE) {    //Consulte sobre la excepcion y me recomiendan usar ResponseStatusException
-            throw new ResponseStatusException(          //Porque permite controlar el codigo de estado HTTP
+        // Si el evento está en estado TENTATIVE, bloqueo el acceso
+        if (userService.isTentativeEvent(id)) { 
+            throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN, "No se puede acceder a información de eventos en estado TENTATIVE"
             );
         }
         return e;
-    }
-
-    @PostMapping("/registrarUsuario")
-    public void registrarUsuario(@RequestBody UserAuthenticationRequestDTO userDTO) throws Exception{ //Registro un usuario (guardandolo en la BD)
-        userService.create(userDTO);         
-    }                                      
-
-    @PostMapping(path = "/auth", produces = "application/json")
-    public ResponseEntity<?> authentication(@RequestBody UserAuthenticationRequestDTO userDTO) { //AUTENTICO a un usuario (verfico que exista en la BD)
-        try {
-            User user = modelMapper.map(userDTO, User.class);
-            String token = userAuthenticationService.authenticate(user);
-
-            Map<String, String> responseBody = new HashMap<>();
-            responseBody.put("token", token);                           //De existir en la BD, devuelvo un token, con el que se verifica que esta registrado
-                                                                            //Y puede acceder a URLs de solo registrados (Las de "UserResource")
-            return ResponseEntity.ok(responseBody);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).build();
-        }
     }
 }

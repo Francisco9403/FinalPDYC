@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     public void seguirArtista(Long userId, Long artistId) throws Exception {
         User u = repoUser.findById(userId).orElseThrow();
         // validar existencia via ArtistClient
-        if (artistClient.getById(artistId) == null) throw new Exception("Artista no existe");
+        if (artistClient.getByIdPublic(artistId) == null) throw new Exception("Artista no existe");
         u.getArtistasSeguidos().add(artistId);
         repoUser.save(u);
     }
@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
         return user.getArtistasSeguidos().stream()             //El usuario trae los artistas que sigue
                 .map(artistId -> {
                     try {
-                        return artistClient.getById(artistId); // llamado al microservicio de artista
+                        return artistClient.getByIdPublic(artistId); // llamado al microservicio de artista
                     } catch (Exception ex) {
                         // si el artista no existe o el microservicio no responde, lo ignoramos
                         return null;
@@ -190,7 +190,7 @@ public class UserServiceImpl implements UserService {
         return user.getArtistasSeguidos().stream()             //El usuario trae los artistas que sigue
                 .map(artistId -> {
                     try {
-                        return artistClient.getById(artistId); // llamado al microservicio de artista
+                        return artistClient.getByIdPublic(artistId); // llamado al microservicio de artista
                     } catch (Exception ex) {
                         // si el artista no existe o el microservicio no responde, lo ignoramos
                         return null;
@@ -199,4 +199,10 @@ public class UserServiceImpl implements UserService {
                 .filter(Objects::nonNull) // eliminamos los null
                 .collect(Collectors.toList());
     }
+
+    public List<ArtistDTO> getGeneroArtists(String genero){
+        return artistClient.getAllPublic(genero);
+    }
+
+
 }
