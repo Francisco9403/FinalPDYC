@@ -5,74 +5,88 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Component
 public class jwtTokenUtil {
 
-    //El secret esta en el application.yml del gateway en el MSVC-config
-    @Value("${security.jwt.secret}")
+    // El secret debe venir desde application.yml (o Config Server)
+    @Value("${security.jwt.secret:}")
     private String secret;
+
+    private Algorithm algorithm;
+
+    @PostConstruct
+    public void init() {
+        if (secret == null || secret.trim().isEmpty()) {
+            throw new IllegalStateException("security.jwt.secret no configurado en el gateway");
+        }
+        this.algorithm = Algorithm.HMAC512(secret);
+    }
 
     private String stripBearer(String token) { // Eliminar el prefijo "Bearer " si está presente
         if (token == null) return null;
-        if (token.startsWith("Bearer ")) {
+        token = token.trim();
+        if (token.toLowerCase().startsWith("bearer ")) {
             return token.substring(7).trim();
         }
-        return token.trim();
+        return token;
     }
 
-    public boolean verify(String token){                //Verifica que el token sea válido (firma, expiración, formato).
+    public boolean verify(String token) { // Verifica que el token sea válido (firma, expiración, formato).
         try {
-            token = stripBearer(token);                 // Eliminar el prefijo "Bearer " si está presente
-            //Contrullo un verificador (de tipo JWTVerifier)
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC512(secret)).build(); //se le pasa el "algoritmo de firma" con el que va a estar firmado el token y que la secret key(del token) debeCoincidirConLaQueLePasemos
-            verifier.verify(token);                     // se lanzara excepción si no es válido, firma valida, no expirado, bien formado (manejado por "verifier")
+            token = stripBearer(token);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
             return false;
-        } catch (Exception e) {                         // Atrapamos cualquier otra excepción inesperada
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public String getSubject(String token){             //Devuelve el subject (normalmente el username o userId).        
+    public String getSubject(String token) { // Devuelve el subject (normalmente el username o userId).
         try {
-            token = stripBearer(token);                 // Quitar el prefijo "Bearer " si está presente
-
-            DecodedJWT jwt = JWT.require(Algorithm.HMAC512(secret))//se prepara el verificador con el algoritmo HMAC512 y la clave secreta usada para firmar el token.
-                    .build()
-                    .verify(token);                     //se verifica que el token sea valido                
-            return jwt.getSubject();                    //esta linea es la que devuelve lo que necesitamos
+            token = stripBearer(token);
+            DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+            return jwt.getSubject();
         } catch (Exception e) {
-            return null;                                //Si algo falla, devolvemos null para evitar excepciones
-        }
-    }                                                   //Nota: se prodria agregar un bloque try catch por las dudas
-
-
-    public List<String> getRoles(String token) {        // Devuelve la lista de roles asociados al token.
-        try {
-            token = stripBearer(token);                 //Soporta claim "roles" como array JSON o como string separado por comas
-            DecodedJWT jwt = JWT.require(Algorithm.HMAC512(secret))
-                    .build()
-                    .verify(token);
-
-            List<String> roles = jwt.getClaim("roles").asList(String.class); //Si los roles son un JSON ["ROLE_ADMIN","ROLE_USER"]
-            if (roles == null || roles.isEmpty()) {
-                String rolesStr = jwt.getClaim("roles").asString();          //Si los roles son un String  "ROLE_ADMIN,ROLE_USER"
-                if (rolesStr != null && !rolesStr.isEmpty()) {
-                    return List.of(rolesStr.split(","));
-                }
-                return Collections.emptyList();
-            }
-            return roles;
-        } catch (Exception e) {
-            return Collections.emptyList();              //Si el token es inválido o no tiene roles, devolvemos lista vacía
+            return null;
         }
     }
 
+    public List<String> getRoles(String token) { // Devuelve la lista de roles asociados al token.
+        try {
+            token = stripBearer(token);
+            DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+
+            // Primero intentamos leer como lista JSON
+            List<String> roles = jwt.getClaim("roles").asList(String.class);
+            if (roles != null && !roles.isEmpty()) {
+                // trim de cada rol
+                return roles.stream().map(String::trim).filter(r -> !r.isEmpty()).collect(Collectors.toList());
+            }
+
+            // Si no viene como lista, intentamos como CSV "ROLE_USER,ROLE_ADMIN"
+            String rolesStr = jwt.getClaim("roles").asString();
+            if (rolesStr != null && !rolesStr.isBlank()) {
+                return Arrays.stream(rolesStr.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+            }
+
+            return Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 }

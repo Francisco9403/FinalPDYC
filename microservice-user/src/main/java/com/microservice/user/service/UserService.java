@@ -30,6 +30,9 @@ public interface UserService {
 
     List<ArtistDTO> getGeneroArtists(String genero);
 
-    
+    List<EventDTO> getUpcomingEvents();
+    List<EventDTO> getEventsByArtist(Long artistId);
+    EventDTO getEventById(Long eventId);
+    boolean isTentativeEvent(Long eventId);
     
 }

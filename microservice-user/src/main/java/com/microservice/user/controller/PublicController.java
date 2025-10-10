@@ -25,7 +25,7 @@ public class PublicController {
 
     // REGISTRO DE USUARIO
     @PostMapping("/registrarUsuario")
-    public ResponseEntity<?> registrarUsuario(@RequestBody UserDTO userDTO) throws Exception { 
+    public ResponseEntity<?> registrarUsuario(@RequestBody UserDTO userDTO) throws Exception {
         try {
             userService.create(userDTO);
             return ResponseEntity.ok(Map.of("message", "Usuario creado con éxito"));
@@ -56,13 +56,13 @@ public class PublicController {
 
     // OBTENER DETALLE DE UN EVENTO
     @GetMapping("/evento/{id}")
-    public Object mostrarEvento(@PathVariable Long id) { 
+    public Object mostrarEvento(@PathVariable Long id) {
         Object e = userService.getEventById(id);
 
         // Si el evento está en estado TENTATIVE, bloqueo el acceso
-        if (userService.isTentativeEvent(id)) { 
+        if (userService.isTentativeEvent(id)) {
             throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN, "No se puede acceder a información de eventos en estado TENTATIVE"
+                    HttpStatus.FORBIDDEN, "No se puede acceder a información de eventos en estado TENTATIVE"
             );
         }
         return e;

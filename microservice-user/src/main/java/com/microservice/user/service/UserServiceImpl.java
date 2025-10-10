@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -203,6 +200,70 @@ public class UserServiceImpl implements UserService {
     public List<ArtistDTO> getGeneroArtists(String genero){
         return artistClient.getAllPublic(genero);
     }
+
+    @Override
+    public List<EventDTO> getUpcomingEvents() {
+        // Devuelve todos los eventos futuros que estén vigentes (NO cancelados ni tentativos).
+        LocalDate now = LocalDate.now();
+        List<EventDTO> all;
+        try {
+            // Traemos todos los eventos públicos desde el microservicio de eventos
+            all = eventClient.getAllPublic();
+        } catch (Exception ex) {
+            return Collections.emptyList(); // si el servicio no responde, devolvemos lista vacía
+        }
+        return all.stream()
+                .filter(Objects::nonNull) // eliminamos posibles nulos
+                .filter(e -> e.getStartDate() != null && e.getStartDate().isAfter(now)) // que sean futuros
+                .filter(e -> !"CANCELLED".equals(e.getState()) && !"TENTATIVE".equals(e.getState())) // que no estén cancelados ni tentativos
+                .sorted(Comparator.comparing(EventDTO::getStartDate)) // ordenados por fecha más próxima
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDTO> getEventsByArtist(Long artistId) {
+        // Devuelve todos los eventos en los que participa un artista específico.
+        ArtistDTO artist;
+        try {
+            artist = artistClient.getByIdPublic(artistId); // buscamos el artista en el microservicio
+        } catch (Exception ex) {
+            return Collections.emptyList(); // si falla la llamada, devolvemos vacío
+        }
+        if (artist == null) return Collections.emptyList();
+
+        return artist.getEventsIds().stream() // recorremos todos los eventos en los que participa el artista
+                .map(eventId -> {
+                    try {
+                        return eventClient.getById(eventId); // traemos cada evento por su id
+                    } catch (Exception ex) {
+                        return null; // si el evento no existe o falla la llamada, lo ignoramos
+                    }
+                })
+                .filter(Objects::nonNull) // eliminamos null
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventDTO getEventById(Long eventId) {
+        // Devuelve el detalle de un evento específico por su ID.
+        try {
+            return eventClient.getById(eventId);
+        } catch (Exception ex) {
+            throw new RuntimeException("Evento no encontrado");
+        }
+    }
+
+    @Override
+    public boolean isTentativeEvent(Long eventId) {
+        // Verifica si un evento está en estado "TENTATIVE".
+        try {
+            EventDTO e = eventClient.getById(eventId);
+            return e != null && "TENTATIVE".equals(e.getState());
+        } catch (Exception ex) {
+            return false; // si no se puede obtener el evento, asumimos que no es tentativo
+        }
+    }
+
 
 
 }
