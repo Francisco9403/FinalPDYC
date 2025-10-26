@@ -1,0 +1,96 @@
+# En: microservice-config/configurations/msvc-gateway.yml
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: msvc-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          # IMPORTANTE: enabled: true permite descubrimiento, pero usar rutas explícitas abajo es más seguro.
+          # Considera poner esto en false una vez que todas las rutas estén definidas explícitamente.
+          enabled: true
+      # --- Rutas actualizadas para usar Load Balancer (lb) vía Eureka ---
+      routes:
+        - id: events
+          # Usa el nombre del servicio en Eureka (sensible a mayúsculas, revisa la UI de Eureka)
+          uri: lb://msvc-event
+          predicates:
+            - Path=/api/event/**
+
+        # --- NUEVA RUTA PÚBLICA PARA ARTISTAS ---
+        # Debe ir ANTES de la ruta general /api/artist/**
+        - id: artists-public
+          uri: lb://msvc-artist
+          predicates:
+            - Path=/api/artist/public/**
+          # ¡SIN FILTROS! O con un filtro que indique que no requiere auth
+
+        # --- RUTA PROTEGIDA PARA ARTISTAS ---
+        - id: artists
+          uri: lb://msvc-artist
+          predicates:
+            - Path=/api/artist/** # Esta atrapará /api/artist/create, /api/artist/{id} (no públicos)
+
+
+        - id: users
+          # Usa el nombre del servicio en Eureka
+          uri: lb://msvc-user
+          predicates:
+            - Path=/api/user/**
+
+        - id: admin
+          # Usa el nombre del servicio en Eureka
+          uri: lb://msvc-user # Enruta al mismo servicio de usuario
+          predicates:
+            - Path=/api/admin/**
+
+        - id: auth
+          # Usa el nombre del servicio en Eureka
+          uri: lb://msvc-user
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            # Re-escribe /api/auth/login -> /auth/login
+            - RewritePath=/api/auth(?<segment>/?.*), /auth${segment}
+
+        - id: public
+          # Usa el nombre del servicio en Eureka
+          uri: lb://msvc-user
+          predicates:
+            - Path=/api/public/**
+          # No necesita re-escritura aquí
+
+security:
+  jwt:
+    secret: mate_amargo123
+    expiration: 864000000 # 10 días en milisegundos
+    whitelist:
+      - /actuator/**
+      - /api/auth/**
+      - /api/public/**
+      - /api/artist/all
+      - /api/event/all
+
+eureka:
+  client:
+    # El Gateway no se registra a sí mismo
+    register-with-eureka: false
+    # Debe obtener el registro para encontrar otros servicios
+    fetch-registry: true # Asegúrate que sea true u omitido (por defecto es true)
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+# --- Añadir logging detallado para el Gateway ---
+logging:
+  level:
+    root: INFO
+    com.microservice.gateway: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.netty.http.client: DEBUG
+# ----------------------------------------
