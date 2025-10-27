@@ -63,3 +63,5 @@ function EventDetailsPage({ eventId, onBack, onRequireLogin }) {
   );
 }
 export default EventDetailsPage;
+
+

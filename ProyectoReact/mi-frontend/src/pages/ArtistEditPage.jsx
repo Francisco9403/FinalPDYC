@@ -5,29 +5,30 @@ import { useAuth } from '../AuthContext'; // Para logout en caso de error
 function ArtistEditPage({ artistId, onNavigate }) {
   const { logout } = useAuth();
 
-  // Estados para los datos del artista
+  // --- Estados para los datos del artista (ACTUALIZADO) ---
   const [nombre, setNombre] = useState('');
-  const [genero, setGenero] = useState(''); // Estado para 'genero'
-  const [active, setActive] = useState(true); // Estado para 'active'
+  const [genero, setGenero] = useState('');
+  const [email, setEmail] = useState('');     // <-- NUEVO ESTADO para Email
+  const [active, setActive] = useState(true);
+  // --------------------------------------------------------
 
   // Estados para carga y errores
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // --- Fetch de Datos del Artista (CORREGIDO) ---
+  // --- Fetch de Datos del Artista (ACTUALIZADO) ---
   const fetchArtistData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Usamos el endpoint público
+      // Usamos el endpoint público (asumiendo que devuelve todos los campos)
       const response = await api.get(`/api/artist/public/${artistId}`);
       const artistData = response.data;
       if (artistData) {
         setNombre(artistData.nombre || '');
-        // --- CORRECCIÓN AQUÍ: Leer 'genero' ---
-        setGenero(artistData.genero || ''); // Usar el nombre de campo correcto de tu DTO/BD
-        // ------------------------------------
+        setGenero(artistData.genero || ''); // Campo 'genero'
+        setEmail(artistData.email || '');   // <-- Cargar Email
         setActive(artistData.active === undefined ? true : artistData.active);
       } else {
         setError("No se encontraron datos para este artista.");
@@ -47,24 +48,30 @@ function ArtistEditPage({ artistId, onNavigate }) {
     fetchArtistData();
   }, [fetchArtistData]);
 
-  // --- Función para Manejar la Actualización (CORREGIDO) ---
+  // --- Función para Manejar la Actualización (ACTUALIZADA) ---
   const handleUpdate = async (event) => {
     event.preventDefault();
-    if (nombre.trim() === '') {
-      alert('El nombre es requerido.');
+    // Validación de campos requeridos
+    if (nombre.trim() === '' || genero.trim() === '' || email.trim() === '') {
+      alert('Nombre, Género y Email son requeridos.');
       return;
     }
+    // Validación formato email
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        alert("Por favor, ingresa un email válido.");
+        return;
+    }
+
     setIsUpdating(true);
     setError(null);
 
     try {
-      // Objeto con los datos actualizados
+      // Objeto con los datos actualizados (asegúrate que coincidan con backend)
       const updatedArtistData = {
         nombre: nombre,
-        // --- CORRECCIÓN AQUÍ: Enviar 'genero' ---
-        genero: genero, // Usar el nombre de campo correcto que espera tu backend
-        // -------------------------------------
-        active: active,
+        genero: genero, // Campo 'genero'
+        email: email,   // <-- Enviar Email
+        active: active, // Campo 'active'
       };
 
       // Llamada PUT al endpoint protegido
@@ -75,7 +82,8 @@ function ArtistEditPage({ artistId, onNavigate }) {
 
     } catch (err) {
       console.error(`Error updating artist ${artistId}:`, err);
-      setError(`Error al actualizar: ${err.response?.data?.message || err.message}`);
+      // Mostrar error específico si el backend lo devuelve (ej: email duplicado)
+      setError(`Error al actualizar: ${err.response?.data?.error || err.response?.data?.message || err.message}`);
       if (err.response && (err.response.status === 401 || err.response.status === 403)) {
         logout();
       }
@@ -84,7 +92,7 @@ function ArtistEditPage({ artistId, onNavigate }) {
     }
   };
 
-  // --- Renderizado (sin cambios estructurales) ---
+  // --- Renderizado (ACTUALIZADO con campo Email) ---
   if (loading) return <div className="page-container"><p>Cargando datos del artista...</p></div>;
 
   return (
@@ -109,9 +117,19 @@ function ArtistEditPage({ artistId, onNavigate }) {
           <label htmlFor="generoArtista">Género:</label>
           <input
             id="generoArtista" type="text" value={genero}
-            onChange={(e) => setGenero(e.target.value)} placeholder="Ej: Rock, Pop..." className="input-field"
+            onChange={(e) => setGenero(e.target.value)} required placeholder="Ej: Rock, Pop..." className="input-field" // Añadido required
           />
         </div>
+
+        {/* --- NUEVO CAMPO EMAIL --- */}
+        <div className="form-group">
+          <label htmlFor="emailArtista">Email:</label>
+          <input
+            id="emailArtista" type="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} required placeholder="contacto@artista.com" className="input-field"
+          />
+        </div>
+        {/* ------------------------- */}
 
         <div className="form-group checkbox-group">
           <label htmlFor="activeArtista">Activo:</label>
