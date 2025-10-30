@@ -1,0 +1,12 @@
+package com.microservice.user.dto;
+
+public class RegisterRequestDTO {// REPRESENTA el JSON que manda el usuario cuando se registra (cambiar nombre a RegisterRequestDTO)
+
+    private String nombre;
+    private String email;
+    private String password;
+    // getters / setters
+    public String getNombre(){return nombre;} public void setNombre(String nombre){this.nombre=nombre;}
+    public String getEmail(){return email;} public void setEmail(String email){this.email=email;}
+    public String getPassword(){return password;} public void setPassword(String password){this.password=password;}
+}

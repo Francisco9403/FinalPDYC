@@ -1,0 +1,242 @@
+/* Ruta: mi-frontend/src/App.css */
+
+/* Estilos generales */
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenedor principal de la aplicación */
+.AppContainer {
+  /* Puedes añadir padding o margen global aquí si es necesario */
+}
+
+/* Contenedor estándar para cada "página" */
+.page-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  color: #333;
+  text-align: center;
+  margin-top: 0; /* Evita margen extra arriba */
+  margin-bottom: 20px;
+}
+
+/* Barra de navegación simple */
+nav {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between; /* Alinea botones a los lados */
+    align-items: center; /* Centra verticalmente */
+    flex-wrap: wrap; /* Permite envolver botones si no caben */
+    gap: 10px; /* Espacio entre grupos de botones */
+}
+nav div { /* Contenedor para botones de navegación */
+    display: flex;
+    gap: 10px;
+}
+nav button {
+    margin: 0; /* Quita margen si está dentro de nav */
+}
+
+/* Layout principal con flexbox para columnas (Dashboard) */
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Espacio entre secciones */
+  margin-top: 20px;
+}
+
+/* Estilo de las secciones (Listas, Formularios) */
+.section {
+  flex: 1;
+  min-width: 300px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+.section h2 {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+
+/* Formularios y Inputs */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.event-form { /* Ajustes específicos para el form de eventos si es necesario */
+}
+
+.input-field,
+form input[type="text"],
+form input[type="date"],
+form input[type="email"],
+form input[type="password"]
+{
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%; /* Ocupa ancho completo */
+  box-sizing: border-box;
+  margin-bottom: 5px; /* Pequeño espacio debajo */
+}
+.date-input {
+    /* width: auto; */
+}
+
+
+button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #5cb85c; /* Verde por defecto */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+}
+form button[type="submit"] {
+   align-self: stretch;
+   background-color: #007bff; /* Azul */
+   margin-top: 5px; /* Espacio arriba del botón submit */
+}
+
+button:hover {
+  opacity: 0.9;
+}
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+/* Botón de link (Registro/Login) */
+.link-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 5px 0;
+  margin-top: 15px;
+  display: block;
+  text-align: center;
+  align-self: center;
+}
+.link-button:disabled {
+    color: #aaa;
+    text-decoration: none;
+    cursor: not-allowed;
+}
+
+
+/* Listas */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  background-color: #fff;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+li button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+
+/* Contenedor específico Login/Registro */
+.form-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.form-container form {
+    align-items: stretch;
+}
+.form-container h2 {
+  margin-bottom: 20px;
+}
+.form-container .input-field {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.form-container button[type="submit"] {
+    margin-top: 10px;
+}
+
+
+/* Mensajes */
+.error { color: #d9534f; margin-top: 10px; font-size: 0.9em; }
+.success { color: #5cb85c; margin-top: 10px; font-size: 0.9em; }
+
+/* Botón Logout */
+.logout-button {
+  background-color: #d9534f; /* Rojo */
+}
+.logout-button:hover {
+  background-color: #c9302c;
+}
+
+/* Detalles de Evento */
+.event-details p {
+    margin: 10px 0;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+  .page-container {
+      margin: 10px;
+      padding: 15px;
+  }
+  .form-container {
+      margin: 20px 10px;
+      padding: 20px;
+  }
+  nav {
+      /* flex-direction: column; */ /* Mantenlo flexible */
+      gap: 10px;
+  }
+  nav button {
+      /* width: 100%; */ /* Evita que ocupen todo el ancho */
+      margin: 0;
+  }
+}
