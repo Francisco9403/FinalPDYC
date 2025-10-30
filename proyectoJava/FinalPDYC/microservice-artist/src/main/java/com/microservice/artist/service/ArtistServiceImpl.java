@@ -39,6 +39,8 @@ public class ArtistServiceImpl implements ArtistService {
         existing.setNombre(artist.getNombre());
         existing.setGenero(artist.getGenero());
         existing.setEmail(artist.getEmail());
+        existing.setActive(artist.isActive());
+
         return repo.save(existing);
     }
 

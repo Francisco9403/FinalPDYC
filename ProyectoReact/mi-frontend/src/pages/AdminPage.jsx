@@ -158,10 +158,7 @@ function AdminPage({ onNavigate }) {
                   <label htmlFor="nuevoEmailArtista">Email:</label>
                   <input id="nuevoEmailArtista" type="email" placeholder="contacto@artista.com" value={nuevoEmailArtista} onChange={(e) => setNuevoEmailArtista(e.target.value)} required className="input-field"/>
               </div>
-              <div className="form-group checkbox-group">
-                  <label htmlFor="nuevoActiveArtista">Activo:</label>
-                  <input id="nuevoActiveArtista" type="checkbox" checked={nuevoActiveArtista} onChange={(e) => setNuevoActiveArtista(e.target.checked)}/>
-              </div>
+              
               <button type="submit" disabled={isCreatingArtist}>{isCreatingArtist ? 'Creando...' : 'Agregar Artista'}</button>
             </form>
              {/* --- FIN FORMULARIO ARTISTA --- */}

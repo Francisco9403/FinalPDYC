@@ -111,11 +111,23 @@ function App() {
   if (!token) {
     // Vistas públicas
     switch (currentView) {
-      case 'login': content = <LoginPage onLoginSuccess={handleLoginSuccess} onViewRegister={() => navigate('register')} />; break;
-      case 'register': content = <RegisterPage onViewLogin={() => navigate('login')} />; break;
-      case 'artists': content = <ArtistListPage onNavigate={navigate} onRequireLogin={requireLogin} />; break; // No necesita token/logout aquí
-      case 'eventDetails': content = <EventDetailsPage eventId={currentId} onBack={() => navigate('home')} onRequireLogin={requireLogin} />; break; // No necesita token aquí
-      case 'home': default: content = <HomePage onNavigate={navigate} />; break; // No necesita logout aquí
+case 'login': 
+        content = <LoginPage 
+          onLoginSuccess={handleLoginSuccess} 
+          onViewRegister={() => navigate('register')} 
+          onGoBack={() => navigate('home')} 
+        />; 
+        break;
+      case 'register': 
+        // Te recomiendo hacer lo mismo para la página de registro
+        content = <RegisterPage 
+          onViewLogin={() => navigate('login')} 
+          onGoBack={() => navigate('home')} 
+        />; 
+        break;
+      case 'artists': content = <ArtistListPage onNavigate={navigate} onRequireLogin={requireLogin} />; break; 
+      case 'eventDetails': content = <EventDetailsPage eventId={currentId} onBack={() => navigate('home')} onRequireLogin={requireLogin} />; break; 
+      case 'home': default: content = <HomePage onNavigate={navigate} />; break; 
     }
   } else {
     // Vistas privadas (usuario logueado)

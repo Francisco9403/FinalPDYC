@@ -54,7 +54,6 @@ function EventDetailsPage({ eventId, onBack, onRequireLogin }) {
           <p><strong>Fecha:</strong> {evento.startDate ? new Date(evento.startDate).toLocaleDateString() : 'N/A'}</p>
           <p><strong>Descripción:</strong> {evento.descripcion || 'N/A'}</p>
           {evento.artistIds?.length > 0 && (<p><strong>Artistas (IDs):</strong> {evento.artistIds.join(', ')}</p>)}
-          <button onClick={handleFavoriteClick}>Marcar Favorito</button>
         </div>
       )}
       {/* Mensaje si no hay evento o hubo error */}

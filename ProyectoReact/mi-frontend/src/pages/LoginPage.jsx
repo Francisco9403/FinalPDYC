@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import api from '../api';
 
-function LoginPage({ onLoginSuccess, onViewRegister }) {
+// 1. Acepta la nueva prop 'onGoBack'
+function LoginPage({ onLoginSuccess, onViewRegister, onGoBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -27,6 +28,11 @@ function LoginPage({ onLoginSuccess, onViewRegister }) {
 
   return (
     <div className="form-container page-container">
+      {/* 2. Añade el nuevo botón para "Volver" */}
+      <button onClick={onGoBack} className="link-button" disabled={loading}> 
+        Volver
+      </button>
+
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleLogin}>
         <div><input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input-field"/></div>
@@ -34,9 +40,11 @@ function LoginPage({ onLoginSuccess, onViewRegister }) {
         <button type="submit" disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</button>
         {error && <p className="error">{error}</p>}
       </form>
+
       <button onClick={onViewRegister} className="link-button" disabled={loading}>
         ¿No tienes cuenta? Regístrate
       </button>
+
     </div>
   );
 }
