@@ -7,8 +7,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/artistdb
-    username: username
-    password: mateamargo
+    username: fran
+    password: 123
   jpa:
     hibernate:
       ddl-auto: update

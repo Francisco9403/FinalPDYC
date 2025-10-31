@@ -63,19 +63,35 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event addArtist(Long eventId, Long artistId) {
-        Event e = findById(eventId).orElseThrow(new Exception("el evento no se encontro"));
-        if (!("TENTATIVE".equals(e.getState()))) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        // Validar artista vía ArtistClient
+        // --- CORRECCIÓN ---
+        // findById ya devuelve un Event o lanza una excepción, no necesitamos .orElseThrow()
+        Event e = findById(eventId);
+        // ------------------
+
+        if (!("TENTATIVE".equals(e.getState()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden añadir artistas a eventos en estado TENTATIVE");
+        }
+
+        // Validar artista vía ArtistClient (asegúrate que ArtistClient llame a la ruta PÚBLICA)
         ArtistDTO a = artistClient.getById(artistId);
-        if (a == null || !a.isActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista no válido");
+        if (a == null || !a.isActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista no válido o inactivo");
+        }
+
         e.getArtistIds().add(artistId);
         return repo.save(e);
     }
 
     @Override
     public Event removeArtist(Long eventId, Long artistId) {
+        // --- CORRECIÓN ---
         Event e = findById(eventId);
-        if (!"TENTATIVE".equals(e.getState())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        // ------------------
+
+        if (!"TENTATIVE".equals(e.getState())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden quitar artistas de eventos en estado TENTATIVE");
+        }
+
         e.getArtistIds().remove(artistId);
         return repo.save(e);
     }
