@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.relation.RelationNotFoundException;
+
 @RestController
 @RequestMapping("/api/event")
 public class EventController {
@@ -54,6 +56,31 @@ public class EventController {
         }
         return ResponseEntity.ok(service.addArtist(id, body.get("artistId")));
     }
+    /*@PostMapping("/{eventId}/artists/{artistId}") // Cambia la URL
+        public ResponseEntity<?> addArtist(
+                                            @PathVariable Long eventId,                 // El ID del evento
+                                            @PathVariable Long artistId,                // El ID del artista (nuevo)
+                                            @RequestHeader("X-Auth-Roles") String roles) throws RelationNotFoundException {
+        // 1. Lógica de autorización (sin cambios)
+        String lowerCaseRoles = roles.toLowerCase();
+        if (!lowerCaseRoles.contains("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        // 2. Lógica de negocio con Manejo de Excepciones
+        try {
+            // Llama al servicio con los dos IDs
+            Object result = service.addArtist(eventId, artistId);
+
+            // Si el servicio devuelve el artista/evento actualizado o un DTO de éxito
+            return ResponseEntity.ok(result);
+
+        } catch (IllegalArgumentException e) {
+            // Ejemplo de excepción: Si el artista ya está en el evento, o algún error de validación de negocio
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        // NOTA: Debes asegurarte de que tu capa de servicio (service.addArtist)
+        // lance estas excepciones (ResourceNotFoundException, IllegalArgumentException, etc.).
+    }*/
 
     @DeleteMapping("/{id}/artists/{artistId}")
     public ResponseEntity<?> removeArtist(@PathVariable Long id,

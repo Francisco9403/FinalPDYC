@@ -106,13 +106,16 @@ function EventEditPage({ eventId, onNavigate }) {
   const handleAddArtistToEvent = async () => {
     if (!evento || !selectedArtistId || isUpdatingArtists) return;
 
+    console.log("este es el id del artista: " +selectedArtistId+ " y este el evento: "+eventId);
     const artistId = parseInt(selectedArtistId); //selectedArtistId es el artista que seleccionaron en el front
     const artistName = availableArtists.find(a => a.id === artistId)?.nombre || `ID ${artistId}`; //availableArtists es la lista de artistas
+    console.log("este es el id del artista: " +artistId+ " y este el evento: "+eventId);
 
     setIsUpdatingArtists(true);
     try {
         // POST /api/event/{eventId}/artists con body: { "artistId": Long }
-        const response = await api.post(`/api/event/${eventId}/artists`, { artistId });
+        const response = await api.post(`/api/event/${eventId}/artists`, { "artistId": selectedArtistId });
+        //const response = await api.post(`/api/event/${eventId}/artists/${selectedArtistId}`); // <-- NO SE ENVÍA BODY AQUÍ
 
         // Para simplificar y mejorar UX: Actualizamos el estado local del evento con el nuevo artista.
         const addedArtist = availableArtists.find(a => a.id === artistId);
