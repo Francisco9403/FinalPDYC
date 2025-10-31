@@ -11,7 +11,7 @@ spring:
     password: mateamargo
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
 

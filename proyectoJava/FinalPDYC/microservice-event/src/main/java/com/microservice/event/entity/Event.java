@@ -42,4 +42,7 @@ public class Event {
     public void setState(String state) { this.state = state; }
     public Set<Long> getArtistIds() { return artistIds; }
     public void setArtistIds(Set<Long> artistIds) { this.artistIds = artistIds; }
+    public Event orElseThrow(Exception exception) {
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 }

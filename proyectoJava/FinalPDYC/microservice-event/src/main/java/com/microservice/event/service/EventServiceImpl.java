@@ -61,10 +61,10 @@ public class EventServiceImpl implements EventService {
         repo.delete(e);
     }
 
-        @Override
-        public Event addArtist(Long eventId, Long artistId) {
-        Event e = findById(eventId);
-        if (!"TENTATIVE".equals(e.getState())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    @Override
+    public Event addArtist(Long eventId, Long artistId) {
+        Event e = findById(eventId).orElseThrow(new Exception("el evento no se encontro"));
+        if (!("TENTATIVE".equals(e.getState()))) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         // Validar artista vía ArtistClient
         ArtistDTO a = artistClient.getById(artistId);
         if (a == null || !a.isActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista no válido");

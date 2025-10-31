@@ -37,14 +37,12 @@ public class EventController {
         return service.findAll(state); // público, sin restricción
     }
 
-    // --- CORRECCIÓN: Asumiendo que esta es la ruta para buscar por ID ---
     // Si la ruta real es /search/{id}, ajusta el @GetMapping
     @GetMapping("/{id}")
     public Event byId(@PathVariable Long id) {
         return service.findById(id);
     }
     // --- FIN CORRECCIÓN ---
-
 
     @PostMapping("/{id}/artists")
     public ResponseEntity<?> addArtist(@PathVariable Long id,
