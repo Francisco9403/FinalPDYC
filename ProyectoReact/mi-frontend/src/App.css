@@ -1,242 +1,310 @@
-/* Ruta: mi-frontend/src/App.css */
+/* src/App.css */
 
-/* Estilos generales */
-body {
-  font-family: sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
+/* --- 1. Variables Globales (Paleta de Colores y Fuentes) --- */
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  
+  --primary: #0004ff;
+  --primary-hover: #0056b3;
+  --danger: #dc3545;
+  --danger-hover: #c82333;
+  --warning: #ffc107;
+  --warning-hover: #ffc107;
+  --success: #28a745;
+  --success-hover: #218838;
+  
+  --text: #212529;
+  --text-light: #6c757d;
+  --background: #f8f9fa;
+  --white: #ffffff;
+  --border: #dee2e6;
+  
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  --radius: 8px;
+}
+
+/* --- 2. Reseteo y Estilos Base --- */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Contenedor principal de la aplicación */
+body {
+  font-family: var(--font-family);
+  background-color: var(--background); /* Esta será tu "capa" de color debajo de la imagen */
+  color: var(--text);
+  line-height: 1.6;
+
+  /* --- ESTILOS PARA LA IMAGEN DE FONDO (AÑADIDOS) --- */
+  background-image: url('https://img.freepik.com/vector-gratis/fondo-abstracto-azul_1393-339.jpg?semt=ais_hybrid&w=740&q=80');
+  background-size: cover;       /* Asegura que la imagen cubra todo el espacio */
+  background-position: center;  /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-attachment: fixed; /* Hace que la imagen se quede fija al hacer scroll */
+
+  /* Opcional: Una capa semitransparente sobre la imagen para que el texto sea más legible.
+     Experimenta con el RGBA para encontrar el nivel de oscuridad/transparencia que te guste.
+     Si usas un color sólido, el 'background-color' de arriba no se verá.
+  */
+  background-color: rgba(0, 0, 0, 0.4); 
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* --- 3. Estilos de Layout (Contenedores) --- */
+/* El div principal en App.jsx */
 .AppContainer {
-  /* Puedes añadir padding o margen global aquí si es necesario */
+  width: 100%;
+  min-height: 100vh;
 }
 
-/* Contenedor estándar para cada "página" */
+/* El contenedor principal de cada página */
 .page-container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 1000px; /* Le da un ancho máximo */
+  margin: 2rem auto;  /* <-- 'auto' lo centra horizontalmente */
+  padding: 1.5rem;
+  background-color: var(--white); /* Fondo blanco (distinto al gris de la pág) */
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);   /* La sombra que le da efecto "flotante" */
 }
 
-h1, h2 {
-  color: #333;
+/* Contenedor para Login/Register */
+.form-container {
+  max-width: 450px;
   text-align: center;
-  margin-top: 0; /* Evita margen extra arriba */
-  margin-bottom: 20px;
 }
 
-/* Barra de navegación simple */
-nav {
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between; /* Alinea botones a los lados */
-    align-items: center; /* Centra verticalmente */
-    flex-wrap: wrap; /* Permite envolver botones si no caben */
-    gap: 10px; /* Espacio entre grupos de botones */
-}
-nav div { /* Contenedor para botones de navegación */
-    display: flex;
-    gap: 10px;
-}
-nav button {
-    margin: 0; /* Quita margen si está dentro de nav */
-}
-
-/* Layout principal con flexbox para columnas (Dashboard) */
-.main-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px; /* Espacio entre secciones */
-  margin-top: 20px;
-}
-
-/* Estilo de las secciones (Listas, Formularios) */
+/* Separador de secciones (como en AdminPage) */
 .section {
-  flex: 1;
-  min-width: 300px;
-  border: 1px solid #ddd;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-.section h2 {
-    text-align: left;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
-
-/* Formularios y Inputs */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.event-form { /* Ajustes específicos para el form de eventos si es necesario */
+/* Layout para Admin (2 columnas) */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
 
-.input-field,
-form input[type="text"],
-form input[type="date"],
-form input[type="email"],
-form input[type="password"]
-{
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%; /* Ocupa ancho completo */
-  box-sizing: border-box;
-  margin-bottom: 5px; /* Pequeño espacio debajo */
-}
-.date-input {
-    /* width: auto; */
+/* Hacemos que en móvil sea 1 columna */
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .page-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
 }
 
+/* --- 4. Formularios (Inputs y Botones) --- */
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
 
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+}
+
+/* Grupo de Label + Input (como en ArtistEditPage) */
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Botón Genérico */
 button {
-  padding: 10px 15px;
+  display: inline-block;
+  padding: 0.6rem 1rem; /* Más pequeño que 0.75rem 1.25rem */
+  margin-right: 1rem;
+  font-size: 0.9rem;    /* Fuente un poco más pequeña */
+  font-weight: 600;
   border: none;
-  background-color: #5cb85c; /* Verde por defecto */
-  color: rgb(0, 0, 0);
-  border-radius: 4px;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  align-self: flex-start;
-}
-form button[type="submit"] {
-   align-self: stretch;
-   background-color: #007bff; /* Azul */
-   margin-top: 5px; /* Espacio arriba del botón submit */
+  transition: all 0.2s ease-in-out;
+  background-color: var(--primary);
+  color: var(--white);
+  text-align: center;
 }
 
 button:hover {
-  opacity: 0.9;
+  background-color: var(--primary-hover);
 }
+
 button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
-
-/* Botón de link (Registro/Login) */
+/* Botón de "link" (como en Register/Login) */
 .link-button {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--primary);
+  padding: 0.5rem;
+}
+.link-button:hover {
+  background: none;
   text-decoration: underline;
-  cursor: pointer;
-  padding: 5px 0;
-  margin-top: 15px;
-  display: block;
-  text-align: center;
-  align-self: center;
-}
-.link-button:disabled {
-    color: #aaa;
-    text-decoration: none;
-    cursor: not-allowed;
 }
 
+/* --- 5. Clases de Ayuda (Helpers) --- */
+.error {
+  color: var(--danger);
+  background-color: #fbebee;
+  border: 1px solid var(--danger);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
 
-/* Listas */
-ul {
+.success {
+  color: var(--success);
+  background-color: #f0fff4;
+  border: 1px solid var(--success);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+
+/* Colores de Botones */
+.btn-danger { background-color: var(--danger); }
+.btn-danger:hover { background-color: var(--danger-hover); }
+
+.btn-warning { background-color: var(--warning); color: var(--text); }
+.btn-warning:hover { background-color: var(--warning-hover); color: var(--text); }
+
+.btn-success { background-color: var(--success); }
+.btn-success:hover { background-color: var(--success-hover); }
+
+/* --- 6. Estilos Específicos de Listas (Admin/Dashboard) --- */
+
+/* Para las listas de "Artistas que sigo" y "Eventos" */
+.section ul {
   list-style: none;
   padding: 0;
-  margin: 0;
 }
-
-li {
-  background-color: #fff;
-  padding: 10px 15px;
-  margin-bottom: 8px;
-  border: 1px solid #eee;
-  border-radius: 4px;
+.section li {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
 }
-li button {
-    padding: 5px 10px;
-    font-size: 0.9em;
+.section li:last-child {
+  border-bottom: none;
+}
+.section li span {
+  font-weight: 500;
+}
+/* Damos espacio a los botones dentro de la lista */
+.section li > div {
+  display: flex;
+  gap: 0.5rem;
+}
+/* Hacemos los botones de las listas más pequeños */
+.section li button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
 }
 
 
-/* Contenedor específico Login/Registro */
-.form-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 30px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+
+/* --- 7. Estilos de Componentes (HomePage) --- */
+
+.event-list {
+  display: grid;
+  /* Crea columnas de tarjetas que se ajustan solas */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
-.form-container form {
-    align-items: stretch;
+
+.event-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column; /* Para que footer vaya abajo */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.form-container h2 {
-  margin-bottom: 20px;
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
-.form-container .input-field {
+
+.event-card-body {
+  padding: 1.25rem;
+  flex-grow: 1; /* Ocupa el espacio disponible */
+}
+
+.event-title {
+  font-size: 1.3rem;
+  color: var(--primary);
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+}
+.event-title:hover {
+  text-decoration: underline;
+}
+
+.event-date {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 600;
   display: block;
-  width: 100%;
-  margin-bottom: 15px;
-}
-.form-container button[type="submit"] {
-    margin-top: 10px;
+  margin-bottom: 0.75rem;
 }
 
-
-/* Mensajes */
-.error { color: #d9534f; margin-top: 10px; font-size: 0.9em; }
-.success { color: #5cb85c; margin-top: 10px; font-size: 0.9em; }
-
-/* Botón Logout */
-.logout-button {
-  background-color: #d9534f; /* Rojo */
-}
-.logout-button:hover {
-  background-color: #c9302c;
+.event-description {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
 }
 
-/* Detalles de Evento */
-.event-details p {
-    margin: 10px 0;
+.event-artists, .event-state {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
 }
 
+.event-card-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+  background-color: var(--background);
+}
 
-/* Responsive */
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-  }
-  .page-container {
-      margin: 10px;
-      padding: 15px;
-  }
-  .form-container {
-      margin: 20px 10px;
-      padding: 20px;
-  }
-  nav {
-      /* flex-direction: column; */ /* Mantenlo flexible */
-      gap: 10px;
-  }
-  nav button {
-      /* width: 100%; */ /* Evita que ocupen todo el ancho */
-      margin: 0;
-  }
+.event-card-footer button {
+  width: 100%; /* Botón ocupa todo el ancho del footer */
 }

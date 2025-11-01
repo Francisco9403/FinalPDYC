@@ -105,66 +105,56 @@ function HomePage({ onNavigate, onRequireLogin }) {
         )}
       </nav>
       {isLoading && <p>Cargando...</p>}
-      {errorEventos && <p className="error">{errorEventos}</p>}
-      <div className="section">
-        {!isLoading && eventos.length === 0 && <p>No hay eventos próximos.</p>}
-        <ul>
-          {eventos.map((evento) => (
-            <li
-              key={evento.id}
-              style={{
-                display: 'flex', justifyContent: 'space-between',
-                alignItems: 'flex-start', padding: '15px 10px',
-                borderBottom: '1px solid #eee'
-              }}
+    {errorEventos && <p className="error">{errorEventos}</p>}
+    
+    {/* AÑADIMOS la clase "event-list" */}
+    <div className="event-list"> 
+      {!isLoading && eventos.length === 0 && <p>No hay eventos próximos.</p>}
+      
+      {/* Borramos el <ul> y mapeamos directo a "event-card" */}
+      {eventos.map((evento) => (
+        
+        // --- ESTA ES LA PARTE MODIFICADA ---
+        <div key={evento.id} className="event-card">
+          <div className="event-card-body">
+            <h3 
+              className="event-title"
+              onClick={() => onNavigate('eventDetails', evento.id)}
             >
-              {/* Div de Información */}
-              <div>
-                {/* --- Click en el nombre te lleva a detalles --- */}
-                <span 
-                    onClick={() => onNavigate('eventDetails', evento.id)} 
-                    style={{fontWeight: 'bold', fontSize: '1.2em', cursor: 'pointer', color: '#007bff'}}
-                >
-                   {evento.nombre} 
-                </span>
-                <span style={{marginLeft: '8px', color: '#555'}}>
-                  ({evento.startDate ? new Date(evento.startDate).toLocaleDateString() : 'N/A'})
-                </span>
+              {evento.nombre}
+            </h3>
+            <span className="event-date">
+              {evento.startDate ? new Date(evento.startDate).toLocaleDateString() : 'N/A'}
+            </span>
+            <p className="event-description">
+              {(evento.descripcion && evento.descripcion.length > 100) ? 
+                `${evento.descripcion.substring(0, 100)}...` : 
+                (evento.descripcion || 'N/A')
+              }
+            </p>
+            {evento.artistIds?.length > 0 && (
+              <p className="event-artists">
+                <strong>Artistas:</strong> {getArtistNamesByIds(evento.artistIds)}
+              </p>
+            )}
+            <p className="event-state">
+              <strong>Estado:</strong> {evento.state || 'N/A'}
+            </p>
+          </div>
+          <div className="event-card-footer">
+            <button
+              onClick={() => handleFavoriteClick(evento.id, evento.nombre)}
+              title={token ? "Añadir a mis favoritos" : "Debes iniciar sesión para añadir favoritos"}>
+              Añadir a Favorito
+            </button>
+          </div>
+        </div>
+        // --- FIN DE LA PARTE MODIFICADA ---
 
-                {/* Detalles (incluyendo nombres de artistas) */}
-                <div style={{marginTop: '8px', fontSize: '0.9em', color: '#333'}}>
-                  <p style={{margin: '4px 0'}}>
-                    <strong>Estado:</strong> {evento.state || 'N/A'}
-                  </p>
-                  <p style={{margin: '4px 0'}}>
-                    <strong>Descripción:</strong> {(evento.descripcion && evento.descripcion.length > 100) ? 
-                      `${evento.descripcion.substring(0, 100)}...` : 
-                      (evento.descripcion || 'N/A')
-                    }
-                  </p>
-                  {/* --- MODIFICACIÓN: Mostrar Nombres de Artistas --- */}
-                  {evento.artistIds?.length > 0 && (
-                    <p style={{margin: '4px 0'}}>
-                      <strong>Artistas:</strong> {getArtistNamesByIds(evento.artistIds)}
-                    </p>
-                  )}
-                  {/* --- FIN DE LA MODIFICACIÓN --- */}
-                </div>
-              </div>
-
-              {/* Botón Favorito */}
-              <button
-                onClick={() => handleFavoriteClick(evento.id, evento.nombre)}
-                style={{marginLeft: '15px', padding: '5px 10px', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer', flexShrink: 0}}
-                title={token ? "Añadir a mis favoritos" : "Debes iniciar sesión para añadir favoritos"}>
-                Añadir a Favorito
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      ))}
     </div>
-  );
+  </div>
+);
 }
 export default HomePage;
 
