@@ -141,8 +141,9 @@ function DashboardPage({ onNavigate }) {
                         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>{e.nombre} - {new Date(e.startDate).toLocaleDateString()}</span>
                         <button 
-                        onClick={() => handleUnfollowArtist(a.id, a.nombre)} 
-                        className="btn-danger">                            Quitar Favorito
+                            onClick={() => handleRemoveFavorite(e.id, e.nombre)} // <--- ¡CORREGIDO!
+                            className="btn-danger">
+                            Quitar Favorito
                         </button>
                     </li>
                 )}
