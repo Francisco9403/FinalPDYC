@@ -120,11 +120,11 @@ function DashboardPage({ onNavigate }) {
                 {artistasSeguidos.map(a => 
                   <li key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       {a.nombre} 
-                      <button 
-                          onClick={() => handleUnfollowArtist(a.id, a.nombre)} 
-                          style={{ marginLeft: '10px', background: '#dc3545', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}>
-                          Dejar de Seguir
-                      </button>
+                    <button 
+                    onClick={() => handleUnfollowArtist(a.id, a.nombre)} 
+                    className="btn-danger">
+                    Dejar de Seguir
+                    </button>
                   </li>
                 )}
               </ul>
@@ -141,9 +141,8 @@ function DashboardPage({ onNavigate }) {
                         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>{e.nombre} - {new Date(e.startDate).toLocaleDateString()}</span>
                         <button 
-                            onClick={() => handleRemoveFavorite(e.id, e.nombre)} 
-                            style={{ marginLeft: '10px', background: '#dc3545', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}>
-                            Quitar Favorito
+                        onClick={() => handleUnfollowArtist(a.id, a.nombre)} 
+                        className="btn-danger">                            Quitar Favorito
                         </button>
                     </li>
                 )}

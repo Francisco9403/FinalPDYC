@@ -190,8 +190,8 @@ function AdminPage({ onNavigate }) {
                        <li key={artista.id}>
                            <span>{artista.nombre} {artista.active === false ? '(Inactivo)' : ''}</span>
                            <div>
-                               <button onClick={() => handleEditArtist(artista.id)} style={{marginRight: '5px', backgroundColor: '#f0ad4e'}}>Editar</button>
-                               <button onClick={() => handleDeleteArtist(artista.id, artista.nombre)} style={{backgroundColor: '#d9534f'}}>Eliminar</button>
+                               <button onClick={() => handleEditArtist(artista.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
+                               <button onClick={() => handleDeleteArtist(artista.id, artista.nombre)} style={{backgroundColor: '#dc3545'}}>Eliminar</button>
                            </div>
                        </li>
                    ))}
@@ -212,17 +212,23 @@ function AdminPage({ onNavigate }) {
                            <li key={evento.id}>
                                <span>
                                    {evento.nombre}
-                                   <span style={{color: evento.state === 'TENTATIVE' ? 'orange' : (evento.state === 'CANCELLED' ? 'red' : 'inherit'), marginLeft:'5px'}}>
-                                       ({evento.state})
-                                   </span>
+                                <span style={{
+                                    color: evento.state === 'CONFIRMED' ? 'green' : 
+                                        (evento.state === 'TENTATIVE' ? 'orange' : 
+                                        (evento.state === 'CANCELLED' ? 'red' : 
+                                        (evento.state === 'RESCHEDULED' ? 'dodgerblue' : 'inherit'))), 
+                                    marginLeft:'5px'
+                                }}>
+                                    ({evento.state})
+                                </span>
                                     - {new Date(evento.startDate).toLocaleDateString()}
                                </span>
                                <div>
-                                   <button onClick={() => handleEditEvent(evento.id)} style={{marginRight: '5px', backgroundColor: '#f0ad4e'}}>Editar</button>
+                                   <button onClick={() => handleEditEvent(evento.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
                                    <button
                                        onClick={() => handleCancelEvent(evento.id, evento.nombre)}
                                        disabled={isCancelDisabled}
-                                       style={{backgroundColor: isCancelDisabled ? '#aaa' : '#d9534f'}}
+                                       style={{backgroundColor: isCancelDisabled ? '#a39696ff' : '#dc3545'}}
                                     >
                                        {evento.state === 'CANCELLED' ? 'Cancelado' : 'Cancelar'}
                                    </button>
