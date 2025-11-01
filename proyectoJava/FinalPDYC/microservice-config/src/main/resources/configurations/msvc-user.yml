@@ -16,6 +16,20 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  #CONFIGURACIÓN DE MAIL 
+  mail:
+    host: smtp.gmail.com          # Servidor SMTP (Gmail)
+    port: 587                     # Puerto TLS estándar
+    username: riosjoaquin781@gmail.com 
+    password: bbjz eujc zuoc nqya #Contraseña de aplicacion, se la pedi a google    
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 security:
   jwt:
     secret: mate_amargo123  #Despues descomentar
