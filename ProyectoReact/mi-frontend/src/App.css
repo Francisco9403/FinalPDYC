@@ -1,0 +1,310 @@
+/* src/App.css */
+
+/* --- 1. Variables Globales (Paleta de Colores y Fuentes) --- */
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  
+  --primary: #0004ff;
+  --primary-hover: #0056b3;
+  --danger: #dc3545;
+  --danger-hover: #c82333;
+  --warning: #ffc107;
+  --warning-hover: #ffc107;
+  --success: #28a745;
+  --success-hover: #218838;
+  
+  --text: #212529;
+  --text-light: #6c757d;
+  --background: #f8f9fa;
+  --white: #ffffff;
+  --border: #dee2e6;
+  
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  --radius: 8px;
+}
+
+/* --- 2. Reseteo y Estilos Base --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background); /* Esta será tu "capa" de color debajo de la imagen */
+  color: var(--text);
+  line-height: 1.6;
+
+  /* --- ESTILOS PARA LA IMAGEN DE FONDO (AÑADIDOS) --- */
+  background-image: url('https://img.freepik.com/vector-gratis/fondo-abstracto-azul_1393-339.jpg?semt=ais_hybrid&w=740&q=80');
+  background-size: cover;       /* Asegura que la imagen cubra todo el espacio */
+  background-position: center;  /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-attachment: fixed; /* Hace que la imagen se quede fija al hacer scroll */
+
+  /* Opcional: Una capa semitransparente sobre la imagen para que el texto sea más legible.
+     Experimenta con el RGBA para encontrar el nivel de oscuridad/transparencia que te guste.
+     Si usas un color sólido, el 'background-color' de arriba no se verá.
+  */
+  background-color: rgba(0, 0, 0, 0.4); 
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* --- 3. Estilos de Layout (Contenedores) --- */
+/* El div principal en App.jsx */
+.AppContainer {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* El contenedor principal de cada página */
+.page-container {
+  max-width: 1000px; /* Le da un ancho máximo */
+  margin: 2rem auto;  /* <-- 'auto' lo centra horizontalmente */
+  padding: 1.5rem;
+  background-color: var(--white); /* Fondo blanco (distinto al gris de la pág) */
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);   /* La sombra que le da efecto "flotante" */
+}
+
+/* Contenedor para Login/Register */
+.form-container {
+  max-width: 450px;
+  text-align: center;
+}
+
+/* Separador de secciones (como en AdminPage) */
+.section {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Layout para Admin (2 columnas) */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Hacemos que en móvil sea 1 columna */
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .page-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* --- 4. Formularios (Inputs y Botones) --- */
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+}
+
+/* Grupo de Label + Input (como en ArtistEditPage) */
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Botón Genérico */
+button {
+  display: inline-block;
+  padding: 0.6rem 1rem; /* Más pequeño que 0.75rem 1.25rem */
+  margin-right: 1rem;
+  font-size: 0.9rem;    /* Fuente un poco más pequeña */
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: var(--primary);
+  color: var(--white);
+  text-align: center;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Botón de "link" (como en Register/Login) */
+.link-button {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: 0.5rem;
+}
+.link-button:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+/* --- 5. Clases de Ayuda (Helpers) --- */
+.error {
+  color: var(--danger);
+  background-color: #fbebee;
+  border: 1px solid var(--danger);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+
+.success {
+  color: var(--success);
+  background-color: #f0fff4;
+  border: 1px solid var(--success);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+}
+
+/* Colores de Botones */
+.btn-danger { background-color: var(--danger); }
+.btn-danger:hover { background-color: var(--danger-hover); }
+
+.btn-warning { background-color: var(--warning); color: var(--text); }
+.btn-warning:hover { background-color: var(--warning-hover); color: var(--text); }
+
+.btn-success { background-color: var(--success); }
+.btn-success:hover { background-color: var(--success-hover); }
+
+/* --- 6. Estilos Específicos de Listas (Admin/Dashboard) --- */
+
+/* Para las listas de "Artistas que sigo" y "Eventos" */
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+.section li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.section li:last-child {
+  border-bottom: none;
+}
+.section li span {
+  font-weight: 500;
+}
+/* Damos espacio a los botones dentro de la lista */
+.section li > div {
+  display: flex;
+  gap: 0.5rem;
+}
+/* Hacemos los botones de las listas más pequeños */
+.section li button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+
+
+/* --- 7. Estilos de Componentes (HomePage) --- */
+
+.event-list {
+  display: grid;
+  /* Crea columnas de tarjetas que se ajustan solas */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.event-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column; /* Para que footer vaya abajo */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.event-card-body {
+  padding: 1.25rem;
+  flex-grow: 1; /* Ocupa el espacio disponible */
+}
+
+.event-title {
+  font-size: 1.3rem;
+  color: var(--primary);
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+}
+.event-title:hover {
+  text-decoration: underline;
+}
+
+.event-date {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.event-description {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.event-artists, .event-state {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.event-card-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+  background-color: var(--background);
+}
+
+.event-card-footer button {
+  width: 100%; /* Botón ocupa todo el ancho del footer */
+}

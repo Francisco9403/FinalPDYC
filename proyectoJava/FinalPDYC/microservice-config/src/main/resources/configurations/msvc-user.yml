@@ -1,0 +1,58 @@
+server:
+  port: 9092
+
+spring:
+  application:
+    name: msvc-user
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/userdb
+    username: postgres
+    password: mateamargo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  #CONFIGURACIÓN DE MAIL 
+  mail:
+    host: smtp.gmail.com          # Servidor SMTP (Gmail)
+    port: 587                     # Puerto TLS estándar
+    username: riosjoaquin781@gmail.com 
+    password: bbjzeujczuocnqya #Contraseña de aplicacion, se la pedi a google    
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: "*" # Permite confiar en cualquier certificado para el host
+          connectiontimeout: 5000 # Añade un timeout por si es problema de red
+          timeout: 5000
+          writetimeout: 5000
+
+security:
+  jwt:
+    secret: mate_amargo123  #Despues descomentar
+    expiration: 864000000 # 10 día en milisegundos
+
+# En: microservice-config/configurations/msvc-user.yml
+
+logging:
+  level:
+    # Nivel general en INFO
+    root: INFO
+    # Nivel específico para TU código en DEBUG (más detallado)
+    com.microservice.user: DEBUG # O al menos INFO
+
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
