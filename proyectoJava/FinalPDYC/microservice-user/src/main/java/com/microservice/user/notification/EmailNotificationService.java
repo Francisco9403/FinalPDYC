@@ -19,6 +19,7 @@ public class EmailNotificationService implements NotificationService {
     @Override
     public void sendNotification(User user, String message) {
         try {
+            System.out.println("se entro al metodo sendNotification");
             // 1. Crear el objeto de mensaje simple
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
@@ -30,7 +31,7 @@ public class EmailNotificationService implements NotificationService {
 
             // 3. Enviar el correo
             mailSender.send(mailMessage);
-
+            //Console.log("[EMAIL] Enviado a: " + user.getEmail() + " ▶ " + message);
             System.out.println("[EMAIL] Enviado a: " + user.getEmail() + " ▶ " + message);
 
         } catch (Exception e) {

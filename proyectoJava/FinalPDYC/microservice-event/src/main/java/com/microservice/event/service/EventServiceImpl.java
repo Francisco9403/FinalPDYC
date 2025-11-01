@@ -100,7 +100,7 @@ public class EventServiceImpl implements EventService {
         if (e.getStartDate().isBefore(LocalDate.now())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fecha debe ser futura");
         e.setState("CONFIRMED");
         Event saved = repo.save(e);
-        notifyUsers(saved, old, "CONFIRMED");
+        notifyUsers(e, old, "CONFIRMED");
         return saved;
     }
 
@@ -113,7 +113,7 @@ public class EventServiceImpl implements EventService {
         e.setStartDate(date);
         e.setState("RESCHEDULED");
         Event saved = repo.save(e);
-        notifyUsers(saved, old, "RESCHEDULED");
+        notifyUsers(e, old, "RESCHEDULED");
         return saved;
     }
 
@@ -124,7 +124,7 @@ public class EventServiceImpl implements EventService {
         if (!("CONFIRMED".equals(old) || "RESCHEDULED".equals(old))) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         e.setState("CANCELLED");
         Event saved = repo.save(e);
-        notifyUsers(saved, old, "CANCELLED");
+        notifyUsers(e, old, "CANCELLED");
         return saved;
     }
 

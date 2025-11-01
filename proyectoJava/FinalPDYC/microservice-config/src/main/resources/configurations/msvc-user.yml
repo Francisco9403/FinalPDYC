@@ -21,7 +21,7 @@ spring:
     host: smtp.gmail.com          # Servidor SMTP (Gmail)
     port: 587                     # Puerto TLS estándar
     username: riosjoaquin781@gmail.com 
-    password: bbjz eujc zuoc nqya #Contraseña de aplicacion, se la pedi a google    
+    password: bbjzeujczuocnqya #Contraseña de aplicacion, se la pedi a google    
     properties:
       mail:
         smtp:
@@ -29,6 +29,11 @@ spring:
           starttls:
             enable: true
             required: true
+          ssl:
+            trust: "*" # Permite confiar en cualquier certificado para el host
+          connectiontimeout: 5000 # Añade un timeout por si es problema de red
+          timeout: 5000
+          writetimeout: 5000
 
 security:
   jwt:

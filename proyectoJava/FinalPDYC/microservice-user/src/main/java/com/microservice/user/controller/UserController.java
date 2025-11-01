@@ -132,14 +132,14 @@ public class UserController {
     public ResponseEntity<?> listarFavoritos(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(userService.listaEventoVigente(userId));
     }
-
-    @GetMapping("/me/eventos-favoritos")
+    //Ver si esta autenticacion se puede hacer una autenticacion basada en headers
+    @GetMapping("/me/eventos-favoritos") //cambio a me para que pueda ser usado sin problemas de autenticacion
     public ResponseEntity<?> listarFavoritosProximos(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(userService.listaEventoProximosDeMisArtistas(userId));
     }
 
     // ---------- Notificaciones ----------
-    @PostMapping("/notify-by-artists")
+    @PostMapping("/me/notify-by-artists")
     public ResponseEntity<?> notifyByArtists(@RequestBody EventStateChangedDTO dto) {
         userService.notifyByArtists(dto);
         return ResponseEntity.ok().build();

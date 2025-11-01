@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> recipientsByArtists(EventStateChangedDTO dto) {
-        Set<Long> artists = dto.getArtistIds() != null ? dto.getArtistIds() : new HashSet<>();
+        Set<Long> artists = (dto.getArtistIds() != null) ? dto.getArtistIds() : new HashSet<>();
         List<User> seguidores = repoUser.findDistinctByArtistasSeguidosIn(artists);
         List<User> fanaticos = repoUser.findDistinctByEventosFavoritosContaining(dto.getEventId());
         Set<User> destinatarios = new HashSet<>();

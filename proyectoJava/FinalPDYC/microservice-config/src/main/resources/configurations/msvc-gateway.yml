@@ -74,6 +74,7 @@ security:
       - /api/public/**
       - /api/artist/all
       - /api/event/all
+      - /api/user/notify-by-artists
 
 eureka:
   client:
