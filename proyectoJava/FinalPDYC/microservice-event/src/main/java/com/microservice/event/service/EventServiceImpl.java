@@ -84,10 +84,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event removeArtist(Long eventId, Long artistId) {
-        // --- CORRECIÓN ---
         Event e = findById(eventId);
-        // ------------------
-
         if (!"TENTATIVE".equals(e.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden quitar artistas de eventos en estado TENTATIVE");
         }
