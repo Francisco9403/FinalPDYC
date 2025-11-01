@@ -11,16 +11,45 @@ Proyecto compuesto por varios microservicios desarrollados en **Java con Spring 
 ```
 /root-del-proyecto
 ├─ .idea/
-├─ microservice-artist/
-├─ microservice-config/
-├─ microservice-eureka/
-├─ microservice-event/
-├─ microservice-gateway/
-├─ microservice-user/
-├─ frontend-react/  (o carpeta donde esté el código React)
+├─ ProyectoReact/
+│ └─ mi-frontend/
+│ ├─ public/
+│ └─ src/
+│ ├─ assets/
+│ ├─ pages/
+│ │ ├─ AdminPage.jsx
+│ │ ├─ ArtistEditPage.jsx
+│ │ ├─ ArtistListPage.jsx
+│ │ ├─ DashboardPage.jsx
+│ │ ├─ EventDetailsPage.jsx
+│ │ ├─ EventEditPage.jsx
+│ │ ├─ HomePage.jsx
+│ │ ├─ LoginPage.jsx
+│ │ └─ RegisterPage.jsx
+│ ├─ App.jsx
+│ ├─ AuthContext.jsx
+│ ├─ api.js
+│ ├─ index.css
+│ └─ main.jsx
+│ ├─ README.md
+│ └─ package.json
+│
+├─ proyectoJava/
+│ └─ FinalPDYC/
+│ ├─ microservice-artist/
+│ ├─ microservice-config/
+│ ├─ microservice-eureka/
+│ ├─ microservice-event/
+│ ├─ microservice-gateway/
+│ └─ microservice-user/
+│ ├─ pom.xml
+│ └─ .gitignore
+│
 ├─ .gitignore
-└─ pom.xml (parent)
+├─ pom.xml
+└─ README.md
 ```
+En ProyectoReact/mi-frontend/src/pages/ se encuentran las distintas vistas del frontend en React, mientras que en proyectoJava/FinalPDYC/ están los microservicios desarrollados con Spring Boot.
 
 > En `frontend-react` se espera encontrar archivos como `HomePage.jsx`, `LoginPage.jsx`, `RegisterPage.jsx`, `DashboardPage.jsx`, `EventEditPage.jsx`, `EventDetailsPage.jsx`, `ArtistListPage.jsx`, `ArtistEditPage.jsx`, `AdminPage.jsx`.
 
