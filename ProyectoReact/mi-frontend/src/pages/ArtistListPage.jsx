@@ -1,5 +1,5 @@
 // Ruta: src/pages/ArtistListPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; // Importé useMemo
 import api from '../api';
 import { useAuth } from '../AuthContext';
 
@@ -8,6 +8,11 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token, logout } = useAuth(); // Usamos token y logout
+
+  // --- INICIO: ESTADOS DE FILTROS ---
+  const [filterGenero, setFilterGenero] = useState('');
+  const [filterActivo, setFilterActivo] = useState(''); // 'true', 'false', o '' (todos)
+  // --- FIN: ESTADOS DE FILTROS ---
 
   useEffect(() => {
       let isMounted = true;
@@ -32,15 +37,33 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
       return () => { isMounted = false };
   }, []); // Se ejecuta solo al montar
 
-  /*const handleFollowClick = (artistId) => {
-    if (!token) {
-      onRequireLogin();
-    } else {
-      alert(`Funcionalidad 'Seguir' artista ${artistId} pendiente.`);
-      // TODO: Implementar POST /api/user/me/seguidos/{artistId}
-      //const response = await api.post('/api/user/me/seguidos/{artistId}');
-    }
-  };*/
+  // --- INICIO: LÓGICA DE FILTROS CON useMemo ---
+  const filteredArtistas = useMemo(() => {
+    return artistas.filter(artista => {
+      
+      // 1. Filtro por Género
+      if (filterGenero) {
+        // Comprueba si el género del artista existe y si incluye el texto del filtro (ignorando mayúsculas)
+        if (!artista.genero || !artista.genero.toLowerCase().includes(filterGenero.toLowerCase())) {
+          return false; // No coincide
+        }
+      }
+
+      // 2. Filtro por Estado (Activo/Inactivo)
+      if (filterActivo) { // 'true' o 'false'
+        const artistaEstaActivo = artista.active === true;
+        const filtroQuiereActivos = filterActivo === 'true';
+        if (artistaEstaActivo !== filtroQuiereActivos) {
+          return false; // No coincide
+        }
+      }
+
+      // Si pasa todos los filtros, se incluye
+      return true;
+    });
+  }, [artistas, filterGenero, filterActivo]); // Recalcula si cambia la lista o los filtros
+  // --- FIN: LÓGICA DE FILTROS ---
+
 
   const handleFollowClick = async (artistId) => { 
     if (!token) {
@@ -52,13 +75,13 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
       await api.post(url); 
 
       // si necesitamos la respuesta
-      // const response = await api.post(url);      
-      alert(`¡Ahora sigues al artista ${artistId}!`); // Ver logica de exito (tal vez sacar el boton de seguir a ese artista)
+      // const response = await api.post(url);       
+      alert(`¡Ahora sigues al artista ${artistId}!`); // Restaurado el alert original
     
     } catch (err) {
       console.error(`Error al seguir al artista ${artistId}:`, err);
       if (err.response && err.response.status === 401) {
-          alert("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
+          alert("Tu sesión ha expirado. Por favor, inicia sesión de nuevo."); // Restaurado el alert original
           logout();
       } else {
           setError("No se pudo seguir al artista. Inténtalo de nuevo.");
@@ -73,14 +96,57 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
            {!token && <button onClick={() => onNavigate('login')}>Iniciar Sesión</button> }
        </nav>
       <h1>Artistas</h1>
+
+      {/* --- INICIO: CONTROLES DE FILTRO --- */}
+      <div className="filter-section" style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
+        <div className="form-group" style={{ flex: 1 }}>
+          <label htmlFor="filter-genero" style={{ display: 'block', marginBottom: '0.25rem' }}>Filtrar por género:</label>
+          <input
+            type="text"
+            id="filter-genero"
+            value={filterGenero}
+            onChange={(e) => setFilterGenero(e.target.value)}
+            placeholder="Escribe un género (ej. Rock)"
+            className="input-field" // Asumo que tienes esta clase en tu CSS
+            style={{ width: '100%' }}
+          />
+        </div>
+        <div className="form-group" style={{ flex: 1 }}>
+          <label htmlFor="filter-activo" style={{ display: 'block', marginBottom: '0.25rem' }}>Filtrar por estado:</label>
+          <select
+            id="filter-activo"
+            value={filterActivo}
+            onChange={(e) => setFilterActivo(e.target.value)}
+            className="input-field" // Asumo que tienes esta clase en tu CSS
+            style={{ width: '100%' }}
+          >
+            <option value="">Todos</option>
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+      </div>
+      {/* --- FIN: CONTROLES DE FILTRO --- */}
+
+
       {loading && <p>Cargando artistas...</p>}
       {error && <p className="error">{error}</p>}
       <div className="section">
-        {!loading && artistas.length === 0 && <p>No hay artistas.</p>}
-        {/* --- MODIFICACIÓN: Mostrar más datos en la lista --- */}
-        <ul className="artist-list"> {/* Añadimos una clase para estilos opcionales */}
-          {artistas.map((artista) => (
-            <li key={artista.id} className={`artist-item ${!artista.active ? 'inactive' : ''}`}> {/* Clase condicional si está inactivo */}
+
+        {/* --- Mensaje dinámico actualizado --- */}
+        {!loading && filteredArtistas.length === 0 && (
+          <p>
+            {artistas.length === 0 
+                ? "No hay artistas." 
+                : "No hay artistas que coincidan con los filtros."
+            }
+          </p>
+        )}
+        
+        {/* --- MODIFICACIÓN: Mapeo sobre filteredArtistas --- */}
+        <ul className="artist-list">
+          {filteredArtistas.map((artista) => (
+            <li key={artista.id} className={`artist-item ${!artista.active ? 'inactive' : ''}`}>
               <div className="artist-info">
                   {/* Nombre (podría ser clicable para ir a detalles) */}
                   <span style={{ fontWeight: 'bold' }}>{artista.nombre || 'Nombre no disponible'}</span>
@@ -104,3 +170,4 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
   );
 }
 export default ArtistListPage;
+

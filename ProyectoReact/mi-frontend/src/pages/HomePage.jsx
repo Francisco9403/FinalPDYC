@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Importa useCallback
+import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Importa useMemo
 import api from '../api';
 import { useAuth } from '../AuthContext'; // Importa useAuth si necesitas logout
 
@@ -11,6 +11,11 @@ function HomePage({ onNavigate, onRequireLogin }) {
   const [allArtists, setAllArtists] = useState([]);
   const [loadingArtists, setLoadingArtists] = useState(true);
   // ----------------------------------------------
+
+  // --- INICIO: ESTADOS PARA EL FILTRO ---
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  // --- FIN: ESTADOS PARA EL FILTRO ---
 
   const { token, logout } = useAuth(); // Usamos token y logout
 
@@ -54,6 +59,43 @@ function HomePage({ onNavigate, onRequireLogin }) {
     fetchAllArtists();
   }, [fetchPublicEvents, fetchAllArtists]); // Llama a ambas
 
+
+  // --- INICIO: LÓGICA DE FILTRO CON useMemo ---
+  const filteredEvents = useMemo(() => {
+    // Asegura que las fechas se interpreten en la zona horaria local
+    const startFilterDate = startDate ? new Date(startDate + 'T00:00:00') : null;
+    const endFilterDate = endDate ? new Date(endDate + 'T00:00:00') : null;
+    
+    // Ajusta la fecha final para incluir todo el día
+    if (endFilterDate) {
+      endFilterDate.setHours(23, 59, 59, 999);
+    }
+
+    // Si no hay filtros, devuelve todos los eventos
+    if (!startFilterDate && !endFilterDate) {
+      return eventos;
+    }
+
+    return eventos.filter(evento => {
+      if (!evento.startDate) return false; // Ignora eventos sin fecha
+      
+      const eventDate = new Date(evento.startDate);
+
+      // Comprueba si la fecha del evento está fuera del rango
+      if (startFilterDate && eventDate < startFilterDate) {
+        return false;
+      }
+      if (endFilterDate && eventDate > endFilterDate) {
+        return false;
+      }
+      
+      // Si pasa ambas comprobaciones, se incluye
+      return true;
+    });
+  }, [eventos, startDate, endDate]); // Recalcula solo si cambian los eventos o las fechas
+  // --- FIN: LÓGICA DE FILTRO ---
+
+
   // --- NUEVO: Función para traducir IDs a Nombres ---
   const getArtistNamesByIds = (artistIds) => {
     if (loadingArtists) return "Cargando artistas...";
@@ -95,66 +137,114 @@ function HomePage({ onNavigate, onRequireLogin }) {
   return (
     <div className="page-container">
       <h1>Próximos Eventos Públicos</h1>
-      <nav>
-        <button onClick={() => onNavigate('artists')}>Ver Artistas</button>
-        {/* Mostramos Login o Dashboard según el token */}
-        {!token ? (
-            <button onClick={() => onNavigate('login')}>Iniciar Sesión</button>
-        ) : (
-            <button onClick={() => onNavigate('dashboard')}>Mi Panel</button>
-        )}
-      </nav>
-      {isLoading && <p>Cargando...</p>}
-    {errorEventos && <p className="error">{errorEventos}</p>}
-    
-    {/* AÑADIMOS la clase "event-list" */}
-    <div className="event-list"> 
-      {!isLoading && eventos.length === 0 && <p>No hay eventos próximos.</p>}
-      
-      {/* Borramos el <ul> y mapeamos directo a "event-card" */}
-      {eventos.map((evento) => (
-        
-        // --- ESTA ES LA PARTE MODIFICADA ---
-        <div key={evento.id} className="event-card">
-          <div className="event-card-body">
-            <h3 
-              className="event-title"
-              onClick={() => onNavigate('eventDetails', evento.id)}
-            >
-              {evento.nombre}
-            </h3>
-            <span className="event-date">
-              {evento.startDate ? new Date(evento.startDate).toLocaleDateString() : 'N/A'}
-            </span>
-            <p className="event-description">
-              {(evento.descripcion && evento.descripcion.length > 100) ? 
-                `${evento.descripcion.substring(0, 100)}...` : 
-                (evento.descripcion || 'N/A')
-              }
-            </p>
-            {evento.artistIds?.length > 0 && (
-              <p className="event-artists">
-                <strong>Artistas:</strong> {getArtistNamesByIds(evento.artistIds)}
-              </p>
-            )}
-            <p className="event-state">
-              <strong>Estado:</strong> {evento.state || 'N/A'}
-            </p>
-          </div>
-          <div className="event-card-footer">
-            <button
-              onClick={() => handleFavoriteClick(evento.id, evento.nombre)}
-              title={token ? "Añadir a mis favoritos" : "Debes iniciar sesión para añadir favoritos"}>
-              Añadir a Favorito
-            </button>
-          </div>
-        </div>
-        // --- FIN DE LA PARTE MODIFICADA ---
 
-      ))}
+      {/* --- INICIO: CONTENEDOR DE CONTROLES (Modificado) --- */}
+      <div className="header-controls">
+        <nav>
+          <button onClick={() => onNavigate('artists')}>Ver Artistas</button>
+          {/* Mostramos Login o Dashboard según el token */}
+          {!token ? (
+              <button onClick={() => onNavigate('login')}>Iniciar Sesión</button>
+          ) : (
+              <button onClick={() => onNavigate('dashboard')}>Mi Panel</button>
+          )}
+        </nav>
+
+        {/* --- Filtro (Añadido) --- */}
+        <div className="filter-container">
+          <div className="filter-group">
+            <label htmlFor="start-date" className="filter-label">Desde:</label>
+            <input 
+              type="date" 
+              id="start-date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="filter-input"
+            />
+          </div>
+          <div className="filter-group">
+            <label htmlFor="end-date" className="filter-label">Hasta:</label>
+            <input 
+              type="date" 
+              id="end-date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              min={startDate} // Evita que la fecha final sea anterior a la inicial
+              className="filter-input"
+            />
+          </div>
+          <button 
+            onClick={() => { setStartDate(''); setEndDate(''); }}
+            className="filter-button"
+          >
+            Limpiar
+          </button>
+        </div>
+      </div>
+      {/* --- FIN: CONTENEDOR DE CONTROLES --- */}
+
+
+      {isLoading && <p>Cargando...</p>}
+      {errorEventos && <p className="error">{errorEventos}</p>}
+      
+      {/* AÑADIMOS la clase "event-list" */}
+      <div className="event-list"> 
+
+        {/* --- Mensaje dinámico (Modificado) --- */}
+        {!isLoading && filteredEvents.length === 0 && (
+          <p>
+            {eventos.length === 0 
+                ? "No hay eventos próximos." 
+                : "No hay eventos que coincidan con tu búsqueda."
+            }
+          </p>
+        )}
+        
+        {/* Borramos el <ul> y mapeamos directo a "event-card" */}
+        {/* --- Mapeo sobre filteredEvents (Modificado) --- */}
+        {filteredEvents.map((evento) => (
+          
+          // --- ESTA ES LA PARTE MODIFICADA ---
+          <div key={evento.id} className="event-card">
+            <div className="event-card-body">
+              <h3 
+                className="event-title"
+                onClick={() => onNavigate('eventDetails', evento.id)}
+              >
+                {evento.nombre}
+              </h3>
+              <span className="event-date">
+                {evento.startDate ? new Date(evento.startDate).toLocaleDateString() : 'N/A'}
+              </span>
+              <p className="event-description">
+                {(evento.descripcion && evento.descripcion.length > 100) ? 
+                  `${evento.descripcion.substring(0, 100)}...` : 
+                  (evento.descripcion || 'N/A')
+                }
+              </p>
+              {evento.artistIds?.length > 0 && (
+                <p className="event-artists">
+                  <strong>Artistas:</strong> {getArtistNamesByIds(evento.artistIds)}
+                </p>
+              )}
+              <p className="event-state">
+                <strong>Estado:</strong> {evento.state || 'N/A'}
+              </p>
+            </div>
+            <div className="event-card-footer">
+              <button
+                onClick={() => handleFavoriteClick(evento.id, evento.nombre)}
+                title={token ? "Añadir a mis favoritos" : "Debes iniciar sesión para añadir favoritos"}>
+                Añadir a Favorito
+              </button>
+            </div>
+          </div>
+          // --- FIN DE LA PARTE MODIFICADA ---
+
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
 }
 export default HomePage;
 
