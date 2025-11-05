@@ -23,9 +23,7 @@ public class EventController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody Event event,
                                     @RequestHeader("X-Auth-Roles") String roles) {
-        // --- Convertir a minúsculas ---
         String lowerCaseRoles = roles.toLowerCase();
-        // --- Usar la versión en minúsculas en el IF ---
         if (!lowerCaseRoles.contains("user") && !lowerCaseRoles.contains("admin")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -37,12 +35,10 @@ public class EventController {
         return service.findAll(state); // público, sin restricción
     }
 
-    // Si la ruta real es /search/{id}, ajusta el @GetMapping
     @GetMapping("/{id}")
     public Event byId(@PathVariable Long id) {
         return service.findById(id);
     }
-    // --- FIN CORRECCIÓN ---
 
     @PostMapping("/{id}/artists")
     public ResponseEntity<?> addArtist(@PathVariable Long id,

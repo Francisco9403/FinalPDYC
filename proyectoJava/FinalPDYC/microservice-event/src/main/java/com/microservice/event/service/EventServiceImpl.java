@@ -63,13 +63,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event addArtist(Long eventId, Long artistId) {
-        // --- CORRECCIÓN ---
-        // findById ya devuelve un Event o lanza una excepción, no necesitamos .orElseThrow()
         Event e = findById(eventId);
-        // ------------------
 
         if (!("TENTATIVE".equals(e.getState()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden añadir artistas a eventos en estado TENTATIVE");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Solo se pueden añadir artistas a eventos en estado TENTATIVE");
         }
 
         // Validar artista vía ArtistClient (asegúrate que ArtistClient llame a la ruta PÚBLICA)

@@ -103,7 +103,6 @@ function EventEditPage({ eventId, onNavigate }) {
     return artist ? artist.nombre : `ID ${id}`; // Devuelve el nombre o el ID como fallback
   };
 
-  // --- Función CORREGIDA para Añadir Artista ---
   const handleAddArtistToEvent = async () => {
     if (!evento || !selectedArtistId || isUpdatingArtists) return;
 
@@ -122,25 +121,24 @@ function EventEditPage({ eventId, onNavigate }) {
         // POST /api/event/{eventId}/artists con body: { "artistId": Long }
         const response = await api.post(`/api/event/${eventId}/artists`, { artistId });
 
-        // --- CORRECCIÓN ---
-        // Usamos la respuesta del backend (que es el evento actualizado)
-        // para actualizar nuestro estado local.
-        setEvento(response.data);
-        // ------------------
+        setEvento(response.data); // Usamos la respuesta del backend (evento actualizado) para actualizar nuestro estado local.
         
         setSelectedArtistId(''); // Limpiar la selección
         alert(`Artista ${artistName} agregado con éxito.`);
     } catch (err) {
         console.error("Error al agregar artista:", err);
-        // Muestra el error en la UI
-        setError(`Error al agregar ${artistName}: ${err.response?.data?.message || err.message}`);
-        if (err.response && (err.response.status === 401 || err.response.status === 403)) logout();
+
+        const errorMessage = err.response.data.message ;//|| err.message;  //Esta const se podria ahorrar. Contiene el error (code 400)
+        setError(`Error al agregar ${artistName}:  ${errorMessage}`);
+        console.log("Error al modificar Evento: "+errorMessage);
+        //alert(`Error al agregar ${artistName}: El evento debe estar en estado TENTATIVE.\nTipo de error: ${errorMessage}`);
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) logout(); //Por si hay un error de autenticacion
     } finally {
         setIsUpdatingArtists(false);
     }
   };
 
-  // --- Función CORREGIDA para Quitar Artista ---
+  // --- Función para Quitar Artista ---
   const handleRemoveArtistFromEvent = async (artistId, artistName) => {
     if (!evento || isUpdatingArtists) return;
 
@@ -152,10 +150,8 @@ function EventEditPage({ eventId, onNavigate }) {
         // DELETE /api/event/{eventId}/artists/{artistId}
         const response = await api.delete(`/api/event/${eventId}/artists/${artistId}`);
 
-        // --- CORRECCIÓN ---
         // Usamos la respuesta del backend para actualizar el estado
         setEvento(response.data);
-        // ------------------
         
         alert(`${artistName} ha sido quitado del evento.`);
     } catch (err) {
@@ -191,7 +187,7 @@ function EventEditPage({ eventId, onNavigate }) {
             {/* Quitamos la lista de IDs simple, la de abajo es mejor */}
           </div>
           
-          {/* Acciones de Cambio de Estado (Sección 2 - Sin cambios) */}
+          {/* Acciones de Cambio de Estado (Sección 2) */}
           <div className="section state-actions-section">
             <h3>Cambiar Estado:</h3>
             <div className="state-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
@@ -206,13 +202,12 @@ function EventEditPage({ eventId, onNavigate }) {
             </div>
           </div>
           
-          {/* --- SECCIÓN GESTIÓN DE ARTISTAS (CORREGIDA) --- */}
+          {/* --- SECCIÓN GESTIÓN DE ARTISTAS --- */}
           <div className="section manage-artists-section">
               <h3>Gestionar Artistas Asignados</h3>
               {loadingAvailableArtists ? <p>Cargando lista de artistas...</p> : (
                 <>
-                  {/* Lista de artistas asignados (usando artistIds) */}
-                  {/* --- CORRECCIÓN: Chequeamos evento.artistIds --- */}
+                  {/* Lista de artistas asignados (usando artistIds), Chequeamos evento.artistIds */}
                   {(!evento.artistIds || evento.artistIds.length === 0) && <p>No hay artistas asignados a este evento.</p>}
                   <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '20px' }}>
                       {evento.artistIds?.map(artistId => { // Iteramos sobre la lista de IDs
@@ -245,7 +240,7 @@ function EventEditPage({ eventId, onNavigate }) {
                       >
                          <option value="">-- {loadingAvailableArtists ? "Cargando..." : "Selecciona un artista"} --</option>
                          {availableArtists
-                             // --- CORRECCIÓN: Filtramos usando evento.artistIds ---
+                             //Se filtra usando evento.artistIds
                              .filter(a => !evento.artistIds?.includes(a.id))
                              .map(artista => (
                                  <option key={artista.id} value={artista.id}>
