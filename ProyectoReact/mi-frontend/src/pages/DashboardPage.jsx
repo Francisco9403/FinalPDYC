@@ -96,7 +96,7 @@ function DashboardPage({ onNavigate }) {
     <div className="page-container">
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-              <button onClick={() => onNavigate('home')}>Inicio Público</button>
+              <button onClick={() => onNavigate('home')}>Ver Eventos</button>
               <button onClick={() => onNavigate('artists')}>Ver Artistas</button>
               {/* --- Botón Condicional --- */}
               {isAdmin && (
@@ -141,8 +141,10 @@ function DashboardPage({ onNavigate }) {
                         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>{e.nombre} - {new Date(e.startDate).toLocaleDateString()}</span>
                         <button 
-                        onClick={() => handleUnfollowArtist(a.id, a.nombre)} 
-                        className="btn-danger">                            Quitar Favorito
+
+                            onClick={() => handleRemoveFavorite(e.id, e.nombre)} //
+                            className="btn-danger">
+                            Quitar Favorito
                         </button>
                     </li>
                 )}

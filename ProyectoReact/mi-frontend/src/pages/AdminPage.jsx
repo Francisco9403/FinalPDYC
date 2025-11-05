@@ -1,43 +1,43 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Importé useMemo
 import api from '../api';
 import { useAuth } from '../AuthContext';
 
 // Hook simple para obtener datos (mantenido aquí por simplicidad)
 function useAdminData(endpoint) {
-    const { token, logout } = useAuth();
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const { token, logout } = useAuth();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    // useCallback para la función de fetch
-    const fetchData = useCallback(async () => {
-        if (!token) { setLoading(false); setData([]); return; }
+  // useCallback para la función de fetch
+  const fetchData = useCallback(async () => {
+    if (!token) { setLoading(false); setData([]); return; }
 
-        setLoading(true); setError(null);
-        let isMounted = true;
-        try {
-            const response = await api.get(endpoint); // Interceptor añade token
-            if (isMounted) setData(Array.isArray(response.data) ? response.data : []);
-        } catch (err) {
-            console.error(`Error fetch admin ${endpoint}:`, err);
-            if (isMounted) setError(`Error cargando datos (${endpoint}).`);
-            if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-               console.warn(`Error 401/403 en ${endpoint}, deslogueando.`);
-               logout();
-            }
-        } finally {
-            if (isMounted) setLoading(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token, logout, endpoint]); // Dependencias correctas
+    setLoading(true); setError(null);
+    let isMounted = true;
+    try {
+      const response = await api.get(endpoint); // Interceptor añade token
+      if (isMounted) setData(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error(`Error fetch admin ${endpoint}:`, err);
+      if (isMounted) setError(`Error cargando datos (${endpoint}).`);
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        console.warn(`Error 401/403 en ${endpoint}, deslogueando.`);
+        logout();
+      }
+    } finally {
+      if (isMounted) setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, logout, endpoint]); // Dependencias correctas
 
-    // useEffect que llama a la función de fetch
-    useEffect(() => {
-        fetchData(); // Llama a la función memoizada
-    }, [fetchData]); // Depende de la función memoizada
+  // useEffect que llama a la función de fetch
+  useEffect(() => {
+    fetchData(); // Llama a la función memoizada
+  }, [fetchData]); // Depende de la función memoizada
 
-    // Devolvemos fetchData para recargar manually
-    return { data, setData, loading, error, refreshData: fetchData };
+  // Devolvemos fetchData para recargar manually
+  return { data, setData, loading, error, refreshData: fetchData };
 }
 
 
@@ -48,6 +48,10 @@ function AdminPage({ onNavigate }) {
   const { data: artistas, setData: setArtistas, loading: loadingArtistas, error: errorArtistas, refreshData: refreshArtistas } = useAdminData('/api/artist/all');
   const { data: eventos, setData: setEventos, loading: loadingEventos, error: errorEventos, refreshData: refreshEventos } = useAdminData('/api/event/all');
   // ---------------------------------
+
+  // --- NUEVO: Estado para el filtro de eventos ---
+  const [filterState, setFilterState] = useState(''); // Estado inicial: 'Todos'
+  // ---------------------------------------------
 
   // --- Estados formularios creación (ACTUALIZADO para Artista) ---
   const [nuevoNombreArtista, setNuevoNombreArtista] = useState('');
@@ -61,6 +65,15 @@ function AdminPage({ onNavigate }) {
   const [isCreatingArtist, setIsCreatingArtist] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   // -----------------------------------------------------------
+
+  // --- NUEVO: Lógica de filtro para eventos con useMemo ---
+  const filteredEventos = useMemo(() => {
+    if (!filterState) { // Si filterState es "" (Todos los estados)
+      return eventos;
+    }
+    return eventos.filter(evento => evento.state === filterState);
+  }, [eventos, filterState]); // Se recalcula si 'eventos' o 'filterState' cambian
+  // ----------------------------------------------------
 
   // --- Función Crear Artista (ACTUALIZADA) ---
   const handleCrearArtista = async (event) => {
@@ -188,11 +201,11 @@ function AdminPage({ onNavigate }) {
                <ul>
                    {artistas.map(artista => (
                        <li key={artista.id}>
-                           <span>{artista.nombre} {artista.active === false ? '(Inactivo)' : ''}</span>
-                           <div>
-                               <button onClick={() => handleEditArtist(artista.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
-                               <button onClick={() => handleDeleteArtist(artista.id, artista.nombre)} style={{backgroundColor: '#dc3545'}}>Eliminar</button>
-                           </div>
+                            <span>{artista.nombre} {artista.active === false ? '(Inactivo)' : ''}</span>
+                            <div>
+                                <button onClick={() => handleEditArtist(artista.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
+                                <button onClick={() => handleDeleteArtist(artista.id, artista.nombre)} style={{backgroundColor: '#dc3545'}}>Eliminar</button>
+                            </div>
                        </li>
                    ))}
                </ul>
@@ -201,38 +214,69 @@ function AdminPage({ onNavigate }) {
            </div>
            <div className="section">
                <h2>Gestionar Eventos</h2>
+
+               {/* --- INICIO: FILTRO DE ESTADO AÑADIDO --- */}
+               <div className="form-group" style={{ marginBottom: '1rem' }}>
+                 <label htmlFor="event-state-filter" style={{ fontWeight: 'normal', display: 'block', marginBottom: '0.5rem' }}>Filtrar por estado:</label>
+                 <select 
+                   id="event-state-filter" 
+                   value={filterState} 
+                   onChange={(e) => setFilterState(e.target.value)}
+                   className="input-field" // Reutilizo la clase de los inputs
+                 >
+                   <option value="">-- Todos los estados --</option>
+                   <option value="CONFIRMED">Confirmado</option>
+                   <option value="TENTATIVE">Tentativo</option>
+                   <option value="CANCELLED">Cancelado</option>
+                   <option value="RESCHEDULED">Reprogramado</option>
+                 </select>
+               </div>
+               {/* --- FIN: FILTRO DE ESTADO AÑADIDO --- */}
+
+
                {loadingEventos && <p>Cargando eventos...</p>}
                {errorEventos && <p className="error">{errorEventos}</p>}
-               {!loadingEventos && eventos.length === 0 && <p>No hay eventos.</p>}
+               
+               {/* --- Mensaje de "No hay eventos" actualizado --- */}
+               {!loadingEventos && filteredEventos.length === 0 && (
+                 <p>
+                   {eventos.length === 0 
+                       ? "No hay eventos." 
+                       : "No hay eventos que coincidan con el filtro."
+                   }
+                 </p>
+               )}
+               
                {/* --- CORRECCIÓN JSX AQUÍ --- */}
                <ul>
-                   {eventos.map(evento => {
+                   {/* --- MODIFICADO: Mapeo sobre 'filteredEventos' --- */}
+                   {filteredEventos.map(evento => {
                        const isCancelDisabled = evento.state === 'CANCELLED' || evento.state === 'TENTATIVE';
                        return (
                            <li key={evento.id}>
-                               <span>
-                                   {evento.nombre}
-                                <span style={{
-                                    color: evento.state === 'CONFIRMED' ? 'green' : 
-                                        (evento.state === 'TENTATIVE' ? 'orange' : 
-                                        (evento.state === 'CANCELLED' ? 'red' : 
-                                        (evento.state === 'RESCHEDULED' ? 'dodgerblue' : 'inherit'))), 
-                                    marginLeft:'5px'
-                                }}>
-                                    ({evento.state})
+                                <span>
+                                    {evento.nombre}
+                                 <span style={{
+                                     color: evento.state === 'CONFIRMED' ? 'green' : 
+                                            (evento.state === 'TENTATIVE' ? 'orange' : 
+                                            (evento.state === 'CANCELLED' ? 'red' : 
+                                            (evento.state === 'RESCHEDULED' ? 'dodgerblue' : 'inherit'))), 
+                                     marginLeft:'5px'
+                                 }}>
+                                     ({evento.state})
+                                 </span>
+                                     - {new Date(evento.startDate).toLocaleDateString()}
                                 </span>
-                                    - {new Date(evento.startDate).toLocaleDateString()}
-                               </span>
-                               <div>
-                                   <button onClick={() => handleEditEvent(evento.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
-                                   <button
-                                       onClick={() => handleCancelEvent(evento.id, evento.nombre)}
-                                       disabled={isCancelDisabled}
-                                       style={{backgroundColor: isCancelDisabled ? '#a39696ff' : '#dc3545'}}
+                                <div>
+                                    <button onClick={() => handleEditEvent(evento.id)} style={{marginRight: '5px', backgroundColor: '#0004ff'}}>Editar</button>
+                                    <button
+                                        onClick={() => handleCancelEvent(evento.id, evento.nombre)}
+                                        disabled={isCancelDisabled}
+                                        style={{backgroundColor: isCancelDisabled ? '#a39696ff' : '#dc3545'}}
                                     >
-                                       {evento.state === 'CANCELLED' ? 'Cancelado' : 'Cancelar'}
-                                   </button>
-                               </div>
+                                        {evento.state === 'CANCELLED' ? 'Cancelado' : 'Cancelar'}
+                                    </button>
+                                </div>
                            </li>
                        );
                    })}
