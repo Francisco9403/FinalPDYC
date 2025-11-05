@@ -35,7 +35,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     public Artist update(Long id, Artist artist) {
         Artist existing = findById(id);
-        if (!existing.isActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista desactivado no editable");
+        //if (!existing.isActive()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista desactivado no editable");
         existing.setNombre(artist.getNombre());
         existing.setGenero(artist.getGenero());
         existing.setEmail(artist.getEmail());

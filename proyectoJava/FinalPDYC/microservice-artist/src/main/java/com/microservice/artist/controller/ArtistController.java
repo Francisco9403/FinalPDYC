@@ -20,10 +20,8 @@ public class ArtistController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody Artist artist,
                                     @RequestHeader("X-Auth-Roles") String roles) {
-// --- ¡AÑADE ESTA LÍNEA! ---
         String lowerCaseRoles = roles.toLowerCase();
 
-        // --- ¡Y MODIFICA EL IF! ---
         if (!lowerCaseRoles.contains("user") && !lowerCaseRoles.contains("admin")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -40,10 +38,8 @@ public class ArtistController {
     @GetMapping("/{id}")
     public ResponseEntity<?> byId(@PathVariable Long id,
                                   @RequestHeader("X-Auth-Roles") String roles) {
-// --- ¡AÑADE ESTA LÍNEA! ---
         String lowerCaseRoles = roles.toLowerCase();
 
-        // --- ¡Y MODIFICA EL IF! ---
         if (!lowerCaseRoles.contains("user") && !lowerCaseRoles.contains("admin")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

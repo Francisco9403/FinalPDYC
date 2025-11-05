@@ -28,9 +28,9 @@ function ArtistEditPage({ artistId, onNavigate }) {
       if (artistData) {
         setNombre(artistData.nombre || '');
         setGenero(artistData.genero || ''); // Campo 'genero'
-        setEmail(artistData.email || '');   // <-- Cargar Email
-        setActive(artistData.active === undefined ? true : artistData.active);
-      } else {
+        setEmail(artistData.email || '');               // artistData.active == 1 // Si es 1 (activo), devuelve true, sino (si es 0), devuelve false.
+        setActive(artistData.active === undefined ? true : artistData.active == 1); //si el campo "active" esta indefinido, se setea en true,
+      } else {                                                                // si si esta definido, se setea con el valor que ya trae
         setError("No se encontraron datos para este artista.");
       }
     } catch (err) {
@@ -71,9 +71,10 @@ function ArtistEditPage({ artistId, onNavigate }) {
         nombre: nombre,
         genero: genero, // Campo 'genero'
         email: email,   // <-- Enviar Email
-        active: active, // Campo 'active'
+        active: active, // Campo 'active' //(active ? 1 : 0) probar con esto
       };
-
+      
+      console.log("estado active? : "+updatedArtistData.active);  
       // Llamada PUT al endpoint protegido
       const response = await api.put(`/api/artist/${artistId}`, updatedArtistData);
 
@@ -121,12 +122,11 @@ function ArtistEditPage({ artistId, onNavigate }) {
           />
         </div>
 
-        {/* --- NUEVO CAMPO EMAIL --- */}
         <div className="form-group">
           <label htmlFor="emailArtista">Email:</label>
           <input
             id="emailArtista" type="email" value={email}
-            onChange={(e) => setEmail(e.target.value)} required placeholder="contacto@artista.com" className="input-field"
+            onChange={(e) => setEmail(e.target.value)} required placeholder="contactoArtista@gmail.com" className="input-field"
           />
         </div>
         {/* ------------------------- */}
