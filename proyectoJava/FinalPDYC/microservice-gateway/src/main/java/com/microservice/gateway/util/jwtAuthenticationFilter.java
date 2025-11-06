@@ -66,13 +66,11 @@ public class jwtAuthenticationFilter implements GlobalFilter, Ordered {
             return exchange.getResponse().setComplete();
         }
 
-        // --- ¡NUEVO CHECK EXPLÍCITO! ---
         // 2. Permitir explícitamente rutas públicas de artistas ANTES de la whitelist general
         if (path.startsWith("/api/artist/public/")) {
             log.debug("[jwtFilter] Ruta pública de artista permitida explícitamente: {}", path);
             return chain.filter(exchange); // Pasa al siguiente filtro SIN validar token
         }
-        // ---------------------------------
 
         // 3. Chequear contra la whitelist normalizada
         if (isWhitelisted(path)) {
@@ -140,9 +138,9 @@ public class jwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         // Podríamos probar un orden más alto (número más bajo) para asegurarnos
-        // de que se ejecute antes que otros filtros que podrían interferir.
-        // Por ejemplo, antes del ReactiveLoadBalancerClientFilter (orden 10150).
-        // return -1; // O incluso más bajo si es necesario
+        // de que se ejecute antes que otros filtros que podrían interferir
+        // Por ejemplo, antes del ReactiveLoadBalancerClientFilter
+        // return -1;
         return 1; // Mantenemos el orden que teníamos por ahora
     }
 }

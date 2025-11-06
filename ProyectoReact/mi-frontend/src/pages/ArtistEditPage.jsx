@@ -5,19 +5,18 @@ import { useAuth } from '../AuthContext'; // Para logout en caso de error
 function ArtistEditPage({ artistId, onNavigate }) {
   const { logout } = useAuth();
 
-  // --- Estados para los datos del artista (ACTUALIZADO) ---
+  // --- Estados para los datos del artista
   const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState('');
-  const [email, setEmail] = useState('');     // <-- NUEVO ESTADO para Email
+  const [email, setEmail] = useState('');     //agrego esto para Email
   const [active, setActive] = useState(true);
-  // --------------------------------------------------------
 
   // Estados para carga y errores
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // --- Fetch de Datos del Artista (ACTUALIZADO) ---
+  // --- Fetch de Datos del Artista ---
   const fetchArtistData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -48,7 +47,7 @@ function ArtistEditPage({ artistId, onNavigate }) {
     fetchArtistData();
   }, [fetchArtistData]);
 
-  // --- Función para Manejar la Actualización (ACTUALIZADA) ---
+  // --- Función para Manejar la Actualización ---
   const handleUpdate = async (event) => {
     event.preventDefault();
     // Validación de campos requeridos
@@ -66,11 +65,10 @@ function ArtistEditPage({ artistId, onNavigate }) {
     setError(null);
 
     try {
-      // Objeto con los datos actualizados (asegúrate que coincidan con backend)
       const updatedArtistData = {
         nombre: nombre,
-        genero: genero, // Campo 'genero'
-        email: email,   // <-- Enviar Email
+        genero: genero,
+        email: email, 
         active: active, // Campo 'active' //(active ? 1 : 0) probar con esto
       };
       
@@ -83,7 +81,7 @@ function ArtistEditPage({ artistId, onNavigate }) {
 
     } catch (err) {
       console.error(`Error updating artist ${artistId}:`, err);
-      // Mostrar error específico si el backend lo devuelve (ej: email duplicado)
+      // Mostrar error específico si el backend lo devuelve
       setError(`Error al actualizar: ${err.response?.data?.error || err.response?.data?.message || err.message}`);
       if (err.response && (err.response.status === 401 || err.response.status === 403)) {
         logout();
@@ -93,7 +91,7 @@ function ArtistEditPage({ artistId, onNavigate }) {
     }
   };
 
-  // --- Renderizado (ACTUALIZADO con campo Email) ---
+  // --- Renderizado ---
   if (loading) return <div className="page-container"><p>Cargando datos del artista...</p></div>;
 
   return (
@@ -129,7 +127,6 @@ function ArtistEditPage({ artistId, onNavigate }) {
             onChange={(e) => setEmail(e.target.value)} required placeholder="contactoArtista@gmail.com" className="input-field"
           />
         </div>
-        {/* ------------------------- */}
 
         <div className="form-group checkbox-group">
           <label htmlFor="activeArtista">Activo:</label>

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-// --- ¡CAMBIO AQUÍ! Se quitó url = "..." ---
 // Ahora usará Eureka para encontrar "msvc-artist"
 @FeignClient(name = "msvc-artist")
 public interface ArtistClient {

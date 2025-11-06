@@ -81,11 +81,8 @@ public class jwtTokenUtil {
         }
     }
 
-    // --- ¡NUEVO MÉTODO AÑADIDO! ---
-    /**
-     * Extrae el ID de usuario (claim "id") del token.
-     * Asume que tu msvc-user lo generó con .withClaim("id", userId)
-     */
+    //Extrae el ID de usuario (claim "id") del token y
+    //Se asume que el msvc-user lo generó con .withClaim("id", userId)
     public Long getUserId(String token) {
         try {
             token = stripBearer(token);
@@ -96,7 +93,6 @@ public class jwtTokenUtil {
             return null;
         }
     }
-    // --- FIN DEL NUEVO MÉTODO ---
 
     private String stripBearer(String token) { // Eliminar el prefijo "Bearer " si está presente
         if (token == null) return null;

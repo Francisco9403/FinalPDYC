@@ -7,19 +7,17 @@ function HomePage({ onNavigate, onRequireLogin }) {
   const [loadingEventos, setLoadingEventos] = useState(true); // Renombrado
   const [errorEventos, setErrorEventos] = useState(null); // Renombrado
 
-  // --- NUEVO: Estados para la lista de artistas ---
+  // --- Estados para la lista de artistas ---
   const [allArtists, setAllArtists] = useState([]);
   const [loadingArtists, setLoadingArtists] = useState(true);
-  // ----------------------------------------------
 
-  // --- INICIO: ESTADOS PARA EL FILTRO ---
+  // ---  ESTADOS PARA EL FILTRO ---
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  // --- FIN: ESTADOS PARA EL FILTRO ---
 
   const { token, logout } = useAuth(); // Usamos token y logout
 
-  // --- Cargar Eventos (Función separada) ---
+  // --- Cargar Eventos ---
   const fetchPublicEvents = useCallback(async () => {
     let isMounted = true;
     setLoadingEventos(true); setErrorEventos(null);
@@ -37,7 +35,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
     return () => { isMounted = false; };
   }, []); // Vacío, se crea una vez
 
-  // --- NUEVO: Cargar Artistas (Función separada) ---
+  // --- Cargar Artistas ---
   const fetchAllArtists = useCallback(async () => {
       let isMounted = true;
       setLoadingArtists(true);
@@ -60,7 +58,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
   }, [fetchPublicEvents, fetchAllArtists]); // Llama a ambas
 
 
-  // --- INICIO: LÓGICA DE FILTRO CON useMemo ---
+  // --- LÓGICA DE FILTRO CON useMemo ---
   const filteredEvents = useMemo(() => {
     // Asegura que las fechas se interpreten en la zona horaria local
     const startFilterDate = startDate ? new Date(startDate + 'T00:00:00') : null;
@@ -96,7 +94,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
   // --- FIN: LÓGICA DE FILTRO ---
 
 
-  // --- NUEVO: Función para traducir IDs a Nombres ---
+  // --- Función para traducir IDs a Nombres ---
   const getArtistNamesByIds = (artistIds) => {
     if (loadingArtists) return "Cargando artistas...";
     if (!artistIds || artistIds.length === 0) return "N/A";
@@ -106,9 +104,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
       return artist ? artist.nombre : `ID ${id}`; // Muestra nombre o ID si no lo encuentra
     }).join(', ');
   };
-  // -------------------------------------------------
 
-  // Renombrada: handleFollowClick -> handleFavoriteClick
   const handleFavoriteClick = async (eventId, eventName) => {
     if (!token) {
       onRequireLogin();
@@ -138,7 +134,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
     <div className="page-container">
       <h1>Próximos Eventos Públicos</h1>
 
-      {/* --- INICIO: CONTENEDOR DE CONTROLES (Modificado) --- */}
+      {/* --- CONTENEDOR DE CONTROLES --- */}
       <div className="header-controls">
         <nav>
           <button onClick={() => onNavigate('artists')}>Ver Artistas</button>
@@ -149,8 +145,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
               <button onClick={() => onNavigate('dashboard')}>Mi Panel</button>
           )}
         </nav>
-
-        {/* --- Filtro (Añadido) --- */}
+        
         <div className="filter-container">
           <div className="filter-group">
             <label htmlFor="start-date" className="filter-label">Desde:</label>
@@ -183,14 +178,11 @@ function HomePage({ onNavigate, onRequireLogin }) {
       </div>
       {/* --- FIN: CONTENEDOR DE CONTROLES --- */}
 
-
       {isLoading && <p>Cargando...</p>}
       {errorEventos && <p className="error">{errorEventos}</p>}
-      
-      {/* AÑADIMOS la clase "event-list" */}
       <div className="event-list"> 
 
-        {/* --- Mensaje dinámico (Modificado) --- */}
+        {/* --- Mensaje dinámico --- */}
         {!isLoading && filteredEvents.length === 0 && (
           <p>
             {eventos.length === 0 
@@ -198,13 +190,8 @@ function HomePage({ onNavigate, onRequireLogin }) {
                 : "No hay eventos que coincidan con tu búsqueda."
             }
           </p>
-        )}
-        
-        {/* Borramos el <ul> y mapeamos directo a "event-card" */}
-        {/* --- Mapeo sobre filteredEvents (Modificado) --- */}
+        )}        
         {filteredEvents.map((evento) => (
-          
-          // --- ESTA ES LA PARTE MODIFICADA ---
           <div key={evento.id} className="event-card">
             <div className="event-card-body">
               <h3 
@@ -238,9 +225,7 @@ function HomePage({ onNavigate, onRequireLogin }) {
                 Añadir a Favorito
               </button>
             </div>
-          </div>
-          // --- FIN DE LA PARTE MODIFICADA ---
-
+          </div>          
         ))}
       </div>
     </div>

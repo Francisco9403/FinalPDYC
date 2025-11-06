@@ -1,5 +1,3 @@
-// Ruta: microservice-gateway/src/main/java/com/microservice/gateway/SecurityConfig.java
-
 package com.microservice.gateway;
 
 import org.springframework.context.annotation.Bean;
@@ -42,7 +40,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
-        // La URL de tu frontend de React
+        // La URL del frontend de React
         corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
 
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

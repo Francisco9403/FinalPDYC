@@ -3,7 +3,7 @@ package com.microservice.user.util;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Component // o @Service
+@Component 
 public class PasswordEncoderUtil {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

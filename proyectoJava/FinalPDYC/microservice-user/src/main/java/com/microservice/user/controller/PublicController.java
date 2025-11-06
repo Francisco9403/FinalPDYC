@@ -21,7 +21,7 @@ import java.util.Map;
 public class PublicController {
 
     @Autowired
-    private UserService userService; // Ahora centraliza toda la lógica
+    private UserService userService;
 
     // REGISTRO DE USUARIO
     @PostMapping("/registrarUsuario")

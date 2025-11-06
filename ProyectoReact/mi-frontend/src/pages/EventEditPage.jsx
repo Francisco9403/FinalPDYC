@@ -259,7 +259,6 @@ function EventEditPage({ eventId, onNavigate }) {
                 </>
               )}
           </div>
-          {/* --- FIN SECCIÓN --- */}
         </>
       ) : (
         !error && <p>No se pudo cargar la información del evento.</p>

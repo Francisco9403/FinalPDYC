@@ -10,7 +10,7 @@ public class JwtConfigProperties {
 
     private String secret;
     private long expiration;
-    private List<String> whitelist; // Spring convierte tu .yml a una Lista automáticamente
+    private List<String> whitelist; // Spring convierte el .yml a una Lista automáticamente
 
     // Getters y Setters
     public String getSecret() {

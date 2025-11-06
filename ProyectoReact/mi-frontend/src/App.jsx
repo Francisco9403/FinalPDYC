@@ -2,7 +2,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAuth } from './AuthContext'; // Usa el hook de autenticación
 
-// Importa los componentes de página
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -10,11 +9,10 @@ import ArtistListPage from './pages/ArtistListPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
-// Importa los componentes de Edición (Placeholders)
 import ArtistEditPage from './pages/ArtistEditPage';
 import EventEditPage from './pages/EventEditPage';
 
-import './App.css'; // Estilos generales
+import './App.css';
 
 function App() {
   // Obtiene token, user (con roles) y funciones del contexto
@@ -32,11 +30,9 @@ function App() {
           if (!storedToken && token) { // Se borró el token externamente
               console.warn("[App] Token desaparecido de localStorage, forzando logout.");
               logout();
-              // No es necesario setCurrentView aquí, el cambio de token lo hará en el siguiente render
           } else if (storedToken && !token) { // Se añadió token externamente
                console.warn("[App] Token aparecido en localStorage, sincronizando.");
                login(storedToken);
-               // No es necesario setCurrentView aquí, el cambio de token lo hará
           }
       };
        // Define la vista inicial basada en el token actual del estado
@@ -91,7 +87,6 @@ function App() {
         console.warn("Acceso no autorizado a ruta admin."); alert("Acceso denegado.");
         targetView = 'dashboard'; targetId = null;
     }
-    // ----------------------------
 
     setCurrentView(targetView);
     setCurrentId(targetId);
@@ -119,7 +114,6 @@ case 'login':
         />; 
         break;
       case 'register': 
-        // Te recomiendo hacer lo mismo para la página de registro
         content = <RegisterPage 
           onViewLogin={() => navigate('login')} 
           onGoBack={() => navigate('home')} 
@@ -166,8 +160,6 @@ case 'login':
 
   return (
     <div className="AppContainer">
-      {/* Aquí podrías añadir un Navbar/Header fijo si quisieras */}
-      {/* <Navbar /> */}
       {content}
     </div>
   );

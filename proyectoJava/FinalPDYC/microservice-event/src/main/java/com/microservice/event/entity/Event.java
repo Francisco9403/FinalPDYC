@@ -22,7 +22,7 @@ public class Event {
     private LocalDate startDate;
 
     @Column
-    private String state = "TENTATIVE"; // usar strings para simplicidad
+    private String state = "TENTATIVE"; // Strings para simplicidad
 
     @ElementCollection
     @CollectionTable(name = "event_artists", joinColumns = @JoinColumn(name = "event_id"))

@@ -69,7 +69,7 @@ public class EventServiceImpl implements EventService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Solo se pueden añadir artistas a eventos en estado TENTATIVE");
         }
 
-        // Validar artista vía ArtistClient (asegúrate que ArtistClient llame a la ruta PÚBLICA)
+        // Validar artista vía ArtistClient
         ArtistDTO a = artistClient.getById(artistId);
         if (a == null || !a.isActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artista no válido o inactivo");

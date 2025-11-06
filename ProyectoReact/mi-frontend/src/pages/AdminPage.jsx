@@ -44,16 +44,13 @@ function useAdminData(endpoint) {
 function AdminPage({ onNavigate }) {
   const { logout } = useAuth();
 
-  // --- Fetch de Listas Completas ---
+  // Fetch de Listas Completas
   const { data: artistas, setData: setArtistas, loading: loadingArtistas, error: errorArtistas, refreshData: refreshArtistas } = useAdminData('/api/artist/all');
   const { data: eventos, setData: setEventos, loading: loadingEventos, error: errorEventos, refreshData: refreshEventos } = useAdminData('/api/event/all');
-  // ---------------------------------
-
-  // --- NUEVO: Estado para el filtro de eventos ---
   const [filterState, setFilterState] = useState(''); // Estado inicial: 'Todos'
-  // ---------------------------------------------
+  
 
-  // --- Estados formularios creación (ACTUALIZADO para Artista) ---
+  // Estados formularios creación (para Artista)
   const [nuevoNombreArtista, setNuevoNombreArtista] = useState('');
   const [nuevoGeneroArtista, setNuevoGeneroArtista] = useState('');
   const [nuevoEmailArtista, setNuevoEmailArtista] = useState('');
@@ -64,18 +61,16 @@ function AdminPage({ onNavigate }) {
   const [nuevaFechaEvento, setNuevaFechaEvento] = useState('');
   const [isCreatingArtist, setIsCreatingArtist] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-  // -----------------------------------------------------------
 
-  // --- NUEVO: Lógica de filtro para eventos con useMemo ---
+  // Lógica de filtro para eventos con useMemo
   const filteredEventos = useMemo(() => {
     if (!filterState) { // Si filterState es "" (Todos los estados)
       return eventos;
     }
     return eventos.filter(evento => evento.state === filterState);
   }, [eventos, filterState]); // Se recalcula si 'eventos' o 'filterState' cambian
-  // ----------------------------------------------------
 
-  // --- Función Crear Artista (ACTUALIZADA) ---
+  // --- Función Crear Artista
   const handleCrearArtista = async (event) => {
     event.preventDefault();
     if (nuevoNombreArtista.trim() === '' || nuevoGeneroArtista.trim() === '' || nuevoEmailArtista.trim() === '') {
@@ -97,12 +92,11 @@ function AdminPage({ onNavigate }) {
         setNuevoNombreArtista(''); setNuevoGeneroArtista(''); setNuevoEmailArtista(''); setNuevoActiveArtista(true);
         alert("Artista creado, respuesta inesperada.");
       }
-    } catch (err) { /* ... (manejo de error igual) ... */ }
+    } catch (err) { /* ... (manejo de error) ... */ }
     finally { setIsCreatingArtist(false); }
-  };
-  // --- FIN FUNCIÓN ACTUALIZADA ---
+  };  
 
-  // Función Crear Evento (sin cambios)
+  // Función Crear Evento 
   const handleCrearEvento = async (event) => {
     event.preventDefault(); if (nuevoNombreEvento.trim() === '' || nuevaDescripcionEvento.trim() === '' || nuevaFechaEvento.trim() === '') { alert('Campos requeridos.'); return; } setIsCreatingEvent(true);
     try {
@@ -112,11 +106,11 @@ function AdminPage({ onNavigate }) {
         setEventos(prev => [...prev, response.data]);
         setNuevoNombreEvento(''); setNuevaDescripcionEvento(''); setNuevaFechaEvento(''); alert("Evento creado (TENTATIVE).");
       } else { console.warn("Respuesta inesperada"); setNuevoNombreEvento(''); setNuevaDescripcionEvento(''); setNuevaFechaEvento(''); alert("Evento creado, respuesta inesperada."); }
-    } catch (err) { /* ... (manejo de error igual) ... */ }
+    } catch (err) { /* ... (manejo de error) ... */ }
      finally { setIsCreatingEvent(false); }
   };
 
-  // --- Funciones Eliminar/Cancelar/Navegar Edición (sin cambios) ---
+  // --- Funciones Eliminar/Cancelar/Navegar Edición ---
   const handleDeleteArtist = async (artistId, artistName) => {
       if (!window.confirm(`¿Seguro de eliminar "${artistName}"?`)) return;
       try {
@@ -157,7 +151,7 @@ function AdminPage({ onNavigate }) {
        <div className="main-content">
           <div className="section">
             <h2>Crear Artista</h2>
-            {/* --- FORMULARIO ARTISTA ACTUALIZADO --- */}
+            {/* --- FORMULARIO ARTISTA --- */}
             <form onSubmit={handleCrearArtista}>
               <div className="form-group">
                   <label htmlFor="nuevoNombreArtista">Nombre:</label>
@@ -178,7 +172,7 @@ function AdminPage({ onNavigate }) {
           </div>
           <div className="section">
             <h2>Crear Evento</h2>
-             {/* Formulario Evento (sin cambios) */}
+             {/* Formulario Evento */}
              <form onSubmit={handleCrearEvento} className="event-form">
                <input type="text" placeholder="Nombre" value={nuevoNombreEvento} onChange={(e) => setNuevoNombreEvento(e.target.value)} required className="input-field" />
                <input type="text" placeholder="Descripción" value={nuevaDescripcionEvento} onChange={(e) => setNuevaDescripcionEvento(e.target.value)} required className="input-field"/>
@@ -197,7 +191,6 @@ function AdminPage({ onNavigate }) {
                {loadingArtistas && <p>Cargando artistas...</p>}
                {errorArtistas && <p className="error">{errorArtistas}</p>}
                {!loadingArtistas && artistas.length === 0 && <p>No hay artistas.</p>}
-               {/* --- CORRECCIÓN JSX AQUÍ --- */}
                <ul>
                    {artistas.map(artista => (
                        <li key={artista.id}>
@@ -209,13 +202,12 @@ function AdminPage({ onNavigate }) {
                        </li>
                    ))}
                </ul>
-               {/* --- FIN CORRECCIÓN --- */}
                <button onClick={refreshArtistas} disabled={loadingArtistas}>Recargar Artistas</button>
            </div>
            <div className="section">
                <h2>Gestionar Eventos</h2>
 
-               {/* --- INICIO: FILTRO DE ESTADO AÑADIDO --- */}
+               {/* --- FILTRO DE ESTADO --- */}
                <div className="form-group" style={{ marginBottom: '1rem' }}>
                  <label htmlFor="event-state-filter" style={{ fontWeight: 'normal', display: 'block', marginBottom: '0.5rem' }}>Filtrar por estado:</label>
                  <select 
@@ -246,10 +238,8 @@ function AdminPage({ onNavigate }) {
                    }
                  </p>
                )}
-               
-               {/* --- CORRECCIÓN JSX AQUÍ --- */}
                <ul>
-                   {/* --- MODIFICADO: Mapeo sobre 'filteredEventos' --- */}
+                   {/* --- Mapeo sobre 'filteredEventos' --- */}
                    {filteredEventos.map(evento => {
                        const isCancelDisabled = evento.state === 'CANCELLED' || evento.state === 'TENTATIVE';
                        return (
@@ -281,7 +271,6 @@ function AdminPage({ onNavigate }) {
                        );
                    })}
                </ul>
-               {/* --- FIN CORRECCIÓN --- */}
                 <button onClick={refreshEventos} disabled={loadingEventos}>Recargar Eventos</button>
            </div>
        </div>

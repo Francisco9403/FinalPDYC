@@ -16,14 +16,13 @@ public class JwtTokenUtil {
 
     private final String secret;
 
-    // lectura desde application.yml (o desde config server)
+    // lectura desde application.yml
     public JwtTokenUtil(@Value("${security.jwt.secret}") String secret) {
         this.secret = secret;
     }
-
-    // Validación al arrancar para detectar errores de configuración rápido
+    
     @PostConstruct
-    public void init() {
+    public void init() {        // Validación al arrancar para detectar errores de configuración rápido
         if (!StringUtils.hasText(this.secret)) {
             throw new IllegalStateException("JWT secret no configurado. Ver property 'security.jwt.secret'");
         }
@@ -40,16 +39,15 @@ public class JwtTokenUtil {
                 .withExpiresAt(expirationDate)
                 .sign(Algorithm.HMAC512(secret));
 
-        // Nota: devolvemos solo el JWT; si en tu app esperás el prefijo "Bearer " en la capa superior,
-        // podés concatenarlo ahí. Mantengo "Bearer " si ya lo usás así en otros lugares:
+        // Nota: devolvemos solo el JWT; si se espera el prefijo "Bearer " en la capa superior,
+        // se puede concatenar ahí
         return "Bearer " + token;
     }
 
-    // Extra: obtener claims / username del token (sin prefijo "Bearer ")
+    //obtener claims / username del token (sin prefijo "Bearer ")
     public String getUsernameFromToken(String tokenWithOptionalBearer) {
         String token = stripBearer(tokenWithOptionalBearer);
         DecodedJWT jwt = JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
-        // Si guardaste 'username' como claim:
         return jwt.getClaim("username").asString();
     }
 

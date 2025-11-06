@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import { AuthProvider } from './AuthContext.jsx';
-import './index.css'; // O tu archivo CSS principal
+import './index.css';
 import './App.css';   // Estilos de la aplicación
 
 ReactDOM.createRoot(document.getElementById('root')).render(

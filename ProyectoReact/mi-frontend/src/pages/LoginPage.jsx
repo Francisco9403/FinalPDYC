@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
 
-// 1. Acepta la nueva prop 'onGoBack'
 function LoginPage({ onLoginSuccess, onViewRegister, onGoBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,8 +26,7 @@ function LoginPage({ onLoginSuccess, onViewRegister, onGoBack }) {
   };
 
   return (
-    <div className="form-container page-container">
-      {/* 2. Añade el nuevo botón para "Volver" */}
+    <div className="form-container page-container">    
       <button onClick={onGoBack} className="link-button" disabled={loading}> 
         Volver
       </button>

@@ -40,14 +40,12 @@ security:
     secret: mate_amargo123  #Despues descomentar
     expiration: 864000000 # 10 día en milisegundos
 
-# En: microservice-config/configurations/msvc-user.yml
-
 logging:
   level:
     # Nivel general en INFO
     root: INFO
-    # Nivel específico para TU código en DEBUG (más detallado)
-    com.microservice.user: DEBUG # O al menos INFO
+    # Nivel específico en DEBUG (más detallado)
+    com.microservice.user: DEBUG 
 
 
 eureka:

@@ -7,12 +7,10 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
   const [artistas, setArtistas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token, logout } = useAuth(); // Usamos token y logout
+  const { token, logout } = useAuth();
 
-  // --- INICIO: ESTADOS DE FILTROS ---
   const [filterGenero, setFilterGenero] = useState('');
-  const [filterActivo, setFilterActivo] = useState(''); // 'true', 'false', o '' (todos)
-  // --- FIN: ESTADOS DE FILTROS ---
+  const [filterActivo, setFilterActivo] = useState('');
 
   useEffect(() => {
       let isMounted = true;
@@ -97,7 +95,7 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
        </nav>
       <h1>Artistas</h1>
 
-      {/* --- INICIO: CONTROLES DE FILTRO --- */}
+      {/* --- CONTROLES DE FILTRO --- */}
       <div className="filter-section" style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
         <div className="form-group" style={{ flex: 1 }}>
           <label htmlFor="filter-genero" style={{ display: 'block', marginBottom: '0.25rem' }}>Filtrar por género:</label>
@@ -107,7 +105,7 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
             value={filterGenero}
             onChange={(e) => setFilterGenero(e.target.value)}
             placeholder="Escribe un género (ej. Rock)"
-            className="input-field" // Asumo que tienes esta clase en tu CSS
+            className="input-field"
             style={{ width: '100%' }}
           />
         </div>
@@ -117,7 +115,7 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
             id="filter-activo"
             value={filterActivo}
             onChange={(e) => setFilterActivo(e.target.value)}
-            className="input-field" // Asumo que tienes esta clase en tu CSS
+            className="input-field"
             style={{ width: '100%' }}
           >
             <option value="">Todos</option>
@@ -143,12 +141,12 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
           </p>
         )}
         
-        {/* --- MODIFICACIÓN: Mapeo sobre filteredArtistas --- */}
+        {/* --- Mapeo sobre filteredArtistas --- */}
         <ul className="artist-list">
           {filteredArtistas.map((artista) => (
             <li key={artista.id} className={`artist-item ${!artista.active ? 'inactive' : ''}`}>
               <div className="artist-info">
-                  {/* Nombre (podría ser clicable para ir a detalles) */}
+                  {/* Nombre */}
                   <span style={{ fontWeight: 'bold' }}>{artista.nombre || 'Nombre no disponible'}</span>
                   {/* Género */}
                   {artista.genero && <span style={{ marginLeft: '10px', color: '#555' }}>({artista.genero})</span>}
@@ -159,12 +157,10 @@ function ArtistListPage({ onNavigate, onRequireLogin }) {
                      {artista.active ? 'Activo' : 'Inactivo'}
                   </span>
               </div>
-              {/* Botón Seguir (lógica igual que antes) */}
               <button onClick={() => handleFollowClick(artista.id)}>Seguir</button>
             </li>
           ))}
         </ul>
-        {/* --- FIN DE LA MODIFICACIÓN --- */}
       </div>
     </div>
   );

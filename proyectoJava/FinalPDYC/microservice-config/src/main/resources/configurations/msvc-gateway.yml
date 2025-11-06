@@ -11,23 +11,21 @@ spring:
       discovery:
         locator:
           # IMPORTANTE: enabled: true permite descubrimiento, pero usar rutas explícitas abajo es más seguro.
-          # Considera poner esto en false una vez que todas las rutas estén definidas explícitamente.
+          # ver si poner esto en false una vez que todas las rutas estén definidas explícitamente.
           enabled: true
       # --- Rutas actualizadas para usar Load Balancer (lb) vía Eureka ---
       routes:
         - id: events
-          # Usa el nombre del servicio en Eureka (sensible a mayúsculas, revisa la UI de Eureka)
+          # Usa el nombre del servicio en Eureka (sensible a mayúsculas)
           uri: lb://msvc-event
           predicates:
             - Path=/api/event/**
 
-        # --- NUEVA RUTA PÚBLICA PARA ARTISTAS ---
         # Debe ir ANTES de la ruta general /api/artist/**
         - id: artists-public
           uri: lb://msvc-artist
           predicates:
             - Path=/api/artist/public/**
-          # ¡SIN FILTROS! O con un filtro que indique que no requiere auth
 
         # --- RUTA PROTEGIDA PARA ARTISTAS ---
         - id: artists
@@ -62,7 +60,6 @@ spring:
           uri: lb://msvc-user
           predicates:
             - Path=/api/public/**
-          # No necesita re-escritura aquí
 
 security:
   jwt:
@@ -81,7 +78,7 @@ eureka:
     # El Gateway no se registra a sí mismo
     register-with-eureka: false
     # Debe obtener el registro para encontrar otros servicios
-    fetch-registry: true # Asegúrate que sea true u omitido (por defecto es true)
+    fetch-registry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
 

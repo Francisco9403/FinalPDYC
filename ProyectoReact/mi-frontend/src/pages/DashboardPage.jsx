@@ -102,7 +102,6 @@ function DashboardPage({ onNavigate }) {
               {isAdmin && (
                 <button onClick={() => onNavigate('admin')}>Panel Admin</button>
               )}
-              {/* ------------------------ */}
           </div>
           {user?.username && <span style={{margin: '0 10px'}}>Hola, {user.username} {isAdmin ? '(Admin)' : ''}</span>}
           <button onClick={logout} className="logout-button">Cerrar Sesión</button>
@@ -151,9 +150,6 @@ function DashboardPage({ onNavigate }) {
               </ul>
           </div>
       </div>
-
-       {/* --- Formularios eliminados de aquí --- */}
-
     </div>
   );
 }
